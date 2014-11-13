@@ -45,7 +45,9 @@
     net: host
     name: tmpnb
     env:
-      GITHUB_CLIENT_ID: "{{ github_client_id }}"
-      GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
-      OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
+      FAKE: "test"
+    # TODO: Bring these in from the vault
+    #  GITHUB_CLIENT_ID: "{{ github_client_id }}"
+    #  GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
+    #  OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
     volumes: /var/run/docker.sock:/docker.sock
