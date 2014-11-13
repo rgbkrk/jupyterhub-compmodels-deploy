@@ -25,6 +25,11 @@
   apt: update_cache=yes name=lxc-docker
   sudo: yes
 
+- name: install docker configuration
+  copy: src=docker dest=/etc/default/docker mode=0644
+  sudo: yes
+  register: dockerconf
+
 # This *shouldn't* be necessary because of the DOCKER_OPTS we set.
 # Just for good measure, though.
 - name: disable IP forwarding
