@@ -3,17 +3,6 @@
   apt: name=nginx state=present
   sudo: yes
 
-- name: data directories
-  file: state=directory path={{ static_path }} mode=0755
-  sudo: yes
-
-# TODO get static resources from the docker container
-# TODO CDN these with Magic
-
-- name: unpack the static assets
-  unarchive: src=static.tar dest={{ static_path }}
-  sudo: yes
-
 - name: SSL credentials
   template: src={{ item.from }} dest={{ item.to }} mode=0644
   with_items:
