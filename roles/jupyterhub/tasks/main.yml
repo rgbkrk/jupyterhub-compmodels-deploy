@@ -14,7 +14,7 @@
 
 - include: docker.yml
 
-- name: pull tmpnb service images
+- name: pull jupyterhub service images
   command: docker pull {{ item }}
   with_items:
   - jhamrick/oauthenticator
@@ -43,7 +43,7 @@
     image: jhamrick/oauthenticator
     detach: true
     net: host
-    name: tmpnb
+    name: jupyterhub
     env:
       GITHUB_CLIENT_ID: "{{ github_client_id }}"
       GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
