@@ -12,7 +12,7 @@ This script requires 4 environment variables to be declared:
     OS_DNS_USERNAME - Rackspace user with the tmpnb.org domain
     OS_DNS_PASSWORD - API key for the DNS user
 
-Then to run, you specify which node number we're creating like demo-iad-001.tmpnb.org
+Then to run, you specify which node number we're creating like compmodels-iad-001.tmpnb.org
 
 python script/launch.py 10
 
@@ -24,7 +24,7 @@ import os
 
 import pyrax
 
-def name_new_nodes(prefix="demo", region="iad", node_num=1, domain="tmpnb.org"):
+def name_new_nodes(prefix="compmodels", region="iad", node_num=1, domain="tmpnb.org"):
     # The naming problem
     node_naming_scheme = "{prefix}-{region}-{node_num:03}"
     node_base_name = node_naming_scheme.format(**locals())
@@ -34,7 +34,7 @@ def name_new_nodes(prefix="demo", region="iad", node_num=1, domain="tmpnb.org"):
 
     return user_server_name, proxy_server_name
 
-def launch_node(prefix="demo", region="iad", node_num=1, domain="tmpnb.org"):
+def launch_node(prefix="compmodels", region="iad", node_num=1, domain="tmpnb.org"):
     key_name = "team"
 
     pyrax.set_setting("identity_type", "rackspace")
@@ -64,12 +64,12 @@ def launch_node(prefix="demo", region="iad", node_num=1, domain="tmpnb.org"):
     # Wait on them
     print("Waiting on Proxy server")
     proxy_server = pyrax.utils.wait_for_build(proxy_server, verbose=True)
-    print("Waiting on Notebook User server")
+    print("Waiting on jupyterhub user server")
     user_server = pyrax.utils.wait_for_build(user_server, verbose=True)
 
     # Making this in case we want some JSON
     node_layout = {
-        'notebook_server': {
+        'jupyterhub_server': {
             'private': user_server.networks['private'][0],
             'public': user_server.networks['public'][0]
         },
@@ -78,13 +78,13 @@ def launch_node(prefix="demo", region="iad", node_num=1, domain="tmpnb.org"):
         }
     }
 
-    inventory = '''[notebook]
-{user_server_name} ansible_ssh_user=root ansible_ssh_host={notebook_server_public} configproxy_auth_token={token}
+    inventory = '''[jupyterhub]
+{user_server_name} ansible_ssh_user=root ansible_ssh_host={jupyterhub_server_public} configproxy_auth_token={token}
 
 [proxy]
-{proxy_server_name} ansible_ssh_user=root ansible_ssh_host={proxy_server_public} notebook_host={notebook_server_private}
-'''.format(notebook_server_public=user_server.accessIPv4,
-           notebook_server_private=user_server.networks['private'][0],
+{proxy_server_name} ansible_ssh_user=root ansible_ssh_host={proxy_server_public} jupyterhub_host={jupyterhub_server_private}
+'''.format(jupyterhub_server_public=user_server.accessIPv4,
+           jupyterhub_server_private=user_server.networks['private'][0],
            proxy_server_public=proxy_server.accessIPv4,
            token=binascii.hexlify(os.urandom(24)),
            user_server_name=user_server_name,
@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Launch nodes for tmpnb')
 
-    parser.add_argument('prefix', type=str, default='demo',
+    parser.add_argument('prefix', type=str, default='compmodels',
                         help='prefix in the URL base')
     parser.add_argument('region', type=str, default='iad',
                         help='region to deploy to, also part of the domain name')

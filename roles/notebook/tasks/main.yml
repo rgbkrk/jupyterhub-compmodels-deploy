@@ -17,12 +17,8 @@
 - name: pull tmpnb service images
   command: docker pull {{ item }}
   with_items:
-  - jupyter/configurable-http-proxy
-  - jupyter/tmpnb
-  sudo: yes
-
-- name: pull docker image for user containers
-  command: docker pull {{ tmpnb_image }}
+  - jhamrick/oauthenticator
+  - jhamrick/singleuser
   sudo: yes
 
 - name: reboot
@@ -41,37 +37,15 @@
   command: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8000
   sudo: yes
 
-- name: configproxy
+- name: jupyterhub
   docker:
     state: running
-    image: jupyter/configurable-http-proxy
-    detach: true
-    net: host
-    name: configproxy
-    env:
-      CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
-    command: --default-target http://127.0.0.1:9999
-
-- name: tmpnb
-  docker:
-    state: running
-    image: jupyter/tmpnb
+    image: jhamrick/oauthenticator
     detach: true
     net: host
     name: tmpnb
     env:
-      CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
+      GITHUB_CLIENT_ID: "{{ github_client_id }}"
+      GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
+      OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
     volumes: /var/run/docker.sock:/docker.sock
-    command: >
-      python orchestrate.py
-      --pool_size={{ tmpnb_pool_size }}
-      --cull_timeout={{ tmpnb_cull_timeout }}
-      --cull_period={{ tmpnb_cull_period }}
-      --image={{ tmpnb_image }}
-      --docker_version={{ tmpnb_docker_version }}
-      --static_files={{ tmpnb_static_files }}
-      --redirect_uri={{ tmpnb_redirect_uri }}
-      --command='{{ tmpnb_command }}'
-      --max_dock_workers={{ tmpnb_max_dock_workers }}
-      --mem-limit={{ tmpnb_mem_limit }}
-      --cpu-shares={{ tmpnb_cpu_shares }}
