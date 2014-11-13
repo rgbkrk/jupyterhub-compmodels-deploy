@@ -1,11 +1,11 @@
 ---
-- hosts: notebook
+- hosts: jupyterhub
   vars_files:
   - ['secrets.yml', 'secrets.vault.yml']
   - ['vars.local.yml', 'vars.yml']
   roles:
   - common
-  - notebook
+  - jupyterhub
 
 - hosts: proxy
   vars_files:

@@ -21,12 +21,8 @@ server {
 
     error_log /var/log/nginx/error.log;
 
-    location ~ /(user-[a-zA-Z0-9]*)/static(.*) {
-        alias {{ static_path }}/static$2;
-    }
-
     location / {
-        proxy_pass http://{{ notebook_host }}:8000;
+        proxy_pass http://{{ jupyterhub_host }}:8000;
 
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
@@ -35,8 +31,8 @@ server {
         proxy_set_header X-NginX-Proxy true;
     }
 
-    location ~* /(user-[a-zA-Z0-9]*)/(api/kernels|terminals/websocket)/ {
-        proxy_pass http://{{ notebook_host }}:8000;
+    location ~* /(user/[^/]*)/(api/kernels|terminals/websocket)/ {
+        proxy_pass http://{{ jupyterhub_host }}:8000;
 
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header Host $host;
