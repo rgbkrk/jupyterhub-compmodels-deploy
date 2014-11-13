@@ -79,14 +79,13 @@ def launch_node(prefix="compmodels", region="iad", node_num=1, domain="tmpnb.org
     }
 
     inventory = '''[jupyterhub]
-{user_server_name} ansible_ssh_user=root ansible_ssh_host={jupyterhub_server_public} configproxy_auth_token={token}
+{user_server_name} ansible_ssh_user=root ansible_ssh_host={jupyterhub_server_public}
 
 [proxy]
 {proxy_server_name} ansible_ssh_user=root ansible_ssh_host={proxy_server_public} jupyterhub_host={jupyterhub_server_private}
 '''.format(jupyterhub_server_public=user_server.accessIPv4,
            jupyterhub_server_private=user_server.networks['private'][0],
            proxy_server_public=proxy_server.accessIPv4,
-           token=binascii.hexlify(os.urandom(24)),
            user_server_name=user_server_name,
            proxy_server_name=proxy_server_name,
     )
