@@ -13,13 +13,7 @@
   when: grubbed | changed
 
 - include: docker.yml
-
-- name: pull jupyterhub service images
-  command: docker pull {{ item }}
-  with_items:
-  - jhamrick/oauthenticator
-  - jhamrick/singleuser
-  sudo: yes
+- include: docker-build.yml
 
 - name: reboot
   command: shutdown -r now "Ansible updated grub"
@@ -37,10 +31,22 @@
   command: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8000
   sudo: yes
 
-- name: jupyterhub
+- include: accounts.yml
+
+- name: stop running docker containers
+  shell: docker stop $(docker ps -a -q) || true
+  tags:
+    - docker-rebuild
+
+- name: remove docker containers
+  shell: docker rm $(docker ps -a -q) || true
+  tags:
+    - docker-rebuild
+
+- name: launch jupyterhub
   docker:
     state: running
-    image: jhamrick/oauthenticator
+    image: jhamrick/compmodels-jupyterhub:deploy
     detach: true
     net: host
     name: jupyterhub
@@ -49,3 +55,5 @@
       GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
       OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
     volumes: /var/run/docker.sock:/docker.sock
+  tags:
+    - docker-rebuild

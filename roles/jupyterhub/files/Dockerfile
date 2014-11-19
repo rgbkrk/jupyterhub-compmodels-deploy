@@ -1,0 +1,1 @@
+from jhamrick/compmodels-jupyterhub

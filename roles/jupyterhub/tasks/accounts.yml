@@ -1,0 +1,12 @@
+---
+- name: create instructor accounts
+  user:
+    name: "{{ item }}"
+    group: instructors
+  with_items: instructors
+
+- name: create student accounts
+  user:
+    name: "{{ item }}"
+    group: students
+  with_items: students

@@ -1,0 +1,58 @@
+---
+- name: pull jupyterhub service images
+  command: docker pull {{ item }}
+  with_items:
+  - ipython/scipystack
+  - jhamrick/oauthenticator
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: checkout the compmodels-jupyterhub repository
+  git:
+    repo: https://github.com/jhamrick/compmodels-jupyterhub.git
+    dest: /srv/compmodels-jupyterhub
+  tags:
+    - docker-rebuild
+
+- name: build the jupyter/systemuser docker image
+  docker_image:
+    path: /srv/compmodels-jupyterhub/dockerspawner/systemuser
+    name: jupyter/systemuser
+    state: build
+  tags:
+    - docker-rebuild
+
+- name: build the jhamrick/compmodels-jupyterhub docker image
+  docker_image:
+    path: /srv/compmodels-jupyterhub
+    name: jhamrick/compmodels-jupyterhub
+    state: build
+  tags:
+    - docker-rebuild
+
+- name: create the jupyterhub directory
+  file: path=/srv/jupyterhub state=directory
+  tags:
+    - docker-rebuild
+
+- name: copy the Dockerfile to the jupyterhub directory
+  copy:
+    src: Dockerfile
+    dest: /srv/jupyterhub/Dockerfile
+  tags:
+    - docker-rebuild
+
+- name: create the userlist
+  script: make_userlist.sh /srv/jupyterhub/userlist creates=/srv/jupyterhub/userlist
+  tags:
+    - docker-rebuild
+
+- name: build jhamrick/compmodels-jupyterhub:deploy image
+  docker_image:
+    path: /srv/jupyterhub
+    name: jhamrick/compmodels-jupyterhub
+    tag: deploy
+    state: build
+  tags:
+    - docker-rebuild
