@@ -1,1 +1,1 @@
-from jhamrick/compmodels-jupyterhub
+from jhamrick/jupyterhub
