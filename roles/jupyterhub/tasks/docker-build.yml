@@ -2,7 +2,7 @@
 - name: pull jupyterhub service images
   command: docker pull {{ item }}
   with_items:
-  - jupyter/systemuser
+  - jhamrick/systemuser
   - jhamrick/jupyterhub
   sudo: yes
   tags:
