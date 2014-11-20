@@ -3,7 +3,7 @@
   command: docker pull {{ item }}
   with_items:
   - jupyter/systemuser
-  - jhamrick/compmodels-jupyterhub
+  - jhamrick/jupyterhub
   sudo: yes
   tags:
     - docker-rebuild
