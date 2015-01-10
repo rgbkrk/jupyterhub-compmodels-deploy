@@ -23,7 +23,7 @@
     - docker-rebuild
 
 - name: create the userlist
-  script: make_userlist.sh /srv/jupyterhub/userlist creates=/srv/jupyterhub/userlist
+  template: src=userlist.j2 dest=/srv/jupyterhub/userlist
   sudo: yes
   tags:
     - docker-rebuild
