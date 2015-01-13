@@ -24,7 +24,7 @@
     - stop
     - start
 
-- name: ensure that daemon says jupyterhub is not running
+- name: ensure that daemon says restuser is not running
   shell: "[ ! $(daemon -n restuser --running) ]"
   sudo: yes
   tags:
