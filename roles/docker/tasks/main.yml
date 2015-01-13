@@ -50,10 +50,31 @@
   apt: update_cache=yes name=lxc-docker
   sudo: yes
 
-- name: install docker configuration
-  copy: src=docker dest=/etc/default/docker mode=0644
+- name: install server docker configuration
+  template: src=docker_server dest=/etc/default/docker mode=0644
   sudo: yes
   register: dockerconf
+  when: docker_server == "true"
+
+- name: install client docker configuration
+  template: src=docker_client dest=/etc/default/docker mode=0644
+  sudo: yes
+  register: dockerconf
+  when: docker_server == "false"
+
+- name: create docker TLS directory
+  file: path={{ docker_tls_path }} state=directory
+  sudo: yes
+
+- name: install docker TLS credentials
+  template: src={{ item.from }} dest={{ item.to }} mode=0644
+  with_items:
+    - from: ca.pem.j2
+      to: "{{ docker_tls_path }}/ca.pem"
+    - from: key.pem.j2
+      to: "{{ docker_tls_path }}/key.pem"
+    - from: cert.pem.j2
+      to: "{{ docker_tls_path }}/cert.pem"
 
 - name: restart docker
   service: name=docker state=restarted
@@ -79,8 +100,10 @@
   shell: docker stop $(docker ps -a -q) || true
   tags:
     - docker-rebuild
+    - swarm
 
 - name: remove docker containers
   shell: docker rm $(docker ps -a -q) || true
   tags:
     - docker-rebuild
+    - swarm

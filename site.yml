@@ -9,16 +9,16 @@
   - common
   - docker
 
-- hosts: jupyterhub_host
-  vars_files:
-  - ['secrets.yml', 'secrets.vault.yml']
-  - ['vars.local.yml', 'vars.yml']
-  roles:
-  - jupyterhub_host
-
 - hosts: jupyterhub_nodes
   vars_files:
   - ['secrets.yml', 'secrets.vault.yml']
   - ['vars.local.yml', 'vars.yml']
   roles:
   - jupyterhub_node
+
+- hosts: jupyterhub_host
+  vars_files:
+  - ['secrets.yml', 'secrets.vault.yml']
+  - ['vars.local.yml', 'vars.yml']
+  roles:
+  - jupyterhub_host
