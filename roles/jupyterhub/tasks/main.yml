@@ -49,7 +49,7 @@
 - name: launch jupyterhub
   docker:
     state: running
-    image: jhamrick/compmodels-jupyterhub:deploy
+    image: compmodels/jupyterhub
     detach: true
     net: host
     name: jupyterhub
