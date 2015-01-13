@@ -20,6 +20,11 @@ To deploy the proxy server:
 ./script/deploy_proxy
 ```
 
+Required variables in secrets.yml (or secrets.vault.yml):
+
+- ssl_key: the SSL key
+- ssl_cert: the SSL certificate
+
 ## JupyterHub
 
 To deploy JupyterHub:
@@ -27,6 +32,11 @@ To deploy JupyterHub:
 ```
 ./script/deploy
 ```
+
+Required variables in secrets.yml (or secrets.vault.yml):
+
+- configproxy_auth_token (a smallish random string - `openssl rand -hex 16`)
+- cookie_secret (a large-ish random hex string - (`openssl rand -hex 2048`))
 
 Note that this will stop JupyterHub if it is currently running -- so don't run
 this when people might be using the hub!
