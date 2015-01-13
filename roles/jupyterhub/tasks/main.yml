@@ -43,6 +43,9 @@
   tags:
     - docker-rebuild
 
+- name: create jupyterhub.sqlite
+  file: path=/srv/jupyterhub/jupyterhub.sqlite state=touch mode=0600
+
 - name: launch jupyterhub
   docker:
     state: running
@@ -54,8 +57,11 @@
       GITHUB_CLIENT_ID: "{{ github_client_id }}"
       GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
       OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
+      JPY_COOKIE_SECRET: "{{ cookie_secret }}"
+      CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
     volumes:
         - /var/run/docker.sock:/docker.sock
         - /var/run/restuser.sock:/restuser.sock
+        - /srv/jupyterhub/jupyterhub.sqlite:/srv/oauthenticator/jupyterhub.sqlite
   tags:
     - docker-rebuild
