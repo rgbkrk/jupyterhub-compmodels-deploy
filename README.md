@@ -35,6 +35,9 @@ To deploy JupyterHub:
 
 Required variables in secrets.yml (or secrets.vault.yml):
 
+- github_client_id (the client id as provided by the GitHub app)
+- github_client_secret (the client secret as provided by the GitHub app)
+- oauth_callback_url (the callback url, the same as specified in the GitHub app)
 - configproxy_auth_token (a smallish random string - `openssl rand -hex 16`)
 - cookie_secret (a large-ish random hex string - (`openssl rand -hex 2048`))
 

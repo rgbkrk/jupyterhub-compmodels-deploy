@@ -62,6 +62,6 @@
     volumes:
         - /var/run/docker.sock:/docker.sock
         - /var/run/restuser.sock:/restuser.sock
-        - /srv/jupyterhub/jupyterhub.sqlite:/srv/oauthenticator/jupyterhub.sqlite
+        - /srv/jupyterhub_db:/srv/jupyterhub_db
   tags:
     - docker-rebuild
