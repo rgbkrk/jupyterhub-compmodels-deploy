@@ -2,8 +2,8 @@
 - name: pull jupyterhub service images
   command: docker pull {{ item }}
   with_items:
-  - jhamrick/systemuser
-  - jhamrick/jupyterhub
+  - jupyter/systemuser
+  - jupyter/jupyterhub
   sudo: yes
   tags:
     - docker-rebuild
@@ -16,8 +16,16 @@
 
 - name: copy the Dockerfile to the jupyterhub directory
   copy:
-    src: Dockerfile
+    src: Dockerfile_jupyterhub
     dest: /srv/jupyterhub/Dockerfile
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: copy jupyterhub_config.py to the jupyterhub directory
+  copy:
+    src: jupyterhub_config.py
+    dest: /srv/jupyterhub/jupyterhub_config.py
   sudo: yes
   tags:
     - docker-rebuild
@@ -28,11 +36,33 @@
   tags:
     - docker-rebuild
 
-- name: build jhamrick/compmodels-jupyterhub:deploy image
+- name: build compmodels/jupyterhub image
   docker_image:
     path: /srv/jupyterhub
-    name: jhamrick/compmodels-jupyterhub
-    tag: deploy
+    name: compmodels/jupyterhub
+    state: build
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: create the systemuser directory
+  file: path=/srv/systemuser state=directory
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: copy the Dockerfile to the systemuser directory
+  copy:
+    src: Dockerfile_systemuser
+    dest: /srv/systemuser/Dockerfile
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: build compmodels/systemuser image
+  docker_image:
+    path: /srv/systemuser
+    name: compmodels/systemuser
     state: build
   sudo: yes
   tags:
