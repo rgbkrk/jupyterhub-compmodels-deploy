@@ -2,7 +2,6 @@
 - name: pull jupyterhub service images
   command: docker pull {{ item }}
   with_items:
-  - jupyter/systemuser
   - jupyter/jupyterhub
   sudo: yes
   tags:
@@ -40,29 +39,6 @@
   docker_image:
     path: /srv/jupyterhub
     name: compmodels/jupyterhub
-    state: build
-  sudo: yes
-  tags:
-    - docker-rebuild
-
-- name: create the systemuser directory
-  file: path=/srv/systemuser state=directory
-  sudo: yes
-  tags:
-    - docker-rebuild
-
-- name: copy the Dockerfile to the systemuser directory
-  copy:
-    src: Dockerfile_systemuser
-    dest: /srv/systemuser/Dockerfile
-  sudo: yes
-  tags:
-    - docker-rebuild
-
-- name: build compmodels/systemuser image
-  docker_image:
-    path: /srv/systemuser
-    name: compmodels/systemuser
     state: build
   sudo: yes
   tags:

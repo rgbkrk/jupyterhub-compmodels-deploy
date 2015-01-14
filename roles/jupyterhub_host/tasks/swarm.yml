@@ -1,0 +1,53 @@
+---
+- name: install golang
+  apt: update_cache=yes cache_valid_time=600 name=golang state=latest
+  sudo: yes
+  tags:
+    - swarm
+
+- name: create the /srv/gocode directory
+  file: path=/srv/gocode state=directory
+  sudo: yes
+  tags:
+    - swarm
+
+- name: install swarm
+  shell: GOPATH=/srv/gocode go get -u github.com/docker/swarm
+  sudo: yes
+  tags:
+    - swarm
+
+- name: create the cluster list
+  template: src=cluster.j2 dest=/srv/cluster
+  sudo: yes
+  tags:
+    - swarm
+
+- name: stop swarm manager
+  shell: "daemon -n swarm --running && daemon -n swarm --stop || echo ok"
+  sudo: yes
+  tags:
+    - swarm
+
+- name: wait for swarm manager to exit
+  wait_for: "path=/run/swarm.pid state=absent"
+  tags:
+    - swarm
+
+- name: ensure that daemon says swarm manager is not running
+  shell: "[ ! $(daemon -n swarm --running) ]"
+  sudo: yes
+  tags:
+    - swarm
+
+- name: start swarm manager
+  command: daemon -n swarm -o /var/log/swarm.log -- /srv/gocode/bin/swarm manage --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem --discovery file:///srv/cluster -H tcp://{{ ansible_default_ipv4.address }}:2376
+  sudo: yes
+  tags:
+    - swarm
+
+- name: ensure swarm manager is running
+  shell: daemon -n swarm --running
+  sudo: yes
+  tags:
+    - swarm

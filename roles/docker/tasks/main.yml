@@ -1,0 +1,109 @@
+---
+- name: tweak grub settings
+  lineinfile:
+    dest: /etc/default/grub
+    regexp: GRUB_CMDLINE_LINUX=.*
+    line: GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"
+  register: grubbed
+  sudo: yes
+
+- name: apply changed grub settings
+  command: update-grub
+  sudo: yes
+  when: grubbed | changed
+
+- name: reboot
+  command: shutdown -r now "Ansible updated grub"
+  async: 0
+  poll: 0
+  sudo: yes
+  ignore_errors: true
+  when: grubbed | changed
+
+- name: wait for server to relaunch
+  local_action: wait_for host={{ inventory_hostname }} state=started
+  when: grubbed | changed
+
+- name: see if HTTPS transport is already present
+  stat: path=/usr/lib/apt/methods/https get_md5=false
+  register: https_transport_file
+
+- name: ensure HTTPS transport is available to apt
+  apt: update_cache=yes cache_valid_time=600 name=apt-transport-https
+  sudo: yes
+  when: not https_transport_file.stat.exists
+
+- name: ensure the docker apt key is trusted
+  apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: 36A1D7869245C8950F966E92D8576A8BA88D21E9
+    state: present
+  sudo: yes
+
+- name: ensure the docker apt repository is present
+  apt_repository:
+    repo: deb https://get.docker.com/ubuntu docker main
+    state: present
+  sudo: yes
+
+- name: install docker
+  apt: update_cache=yes name=lxc-docker
+  sudo: yes
+
+- name: install server docker configuration
+  template: src=docker_server dest=/etc/default/docker mode=0644
+  sudo: yes
+  register: dockerconf
+  when: '"jupyterhub_host" in group_names'
+
+- name: install client docker configuration
+  template: src=docker_client dest=/etc/default/docker mode=0644
+  sudo: yes
+  register: dockerconf
+  when: '"jupyterhub_nodes" in group_names'
+
+- name: create docker TLS directory
+  file: path={{ docker_tls_path }} state=directory
+  sudo: yes
+
+- name: install docker TLS credentials
+  template: src={{ item.from }} dest={{ item.to }} mode=0644
+  with_items:
+    - from: ca.pem.j2
+      to: "{{ docker_tls_path }}/ca.pem"
+    - from: key.pem.j2
+      to: "{{ docker_tls_path }}/key.pem"
+    - from: cert.pem.j2
+      to: "{{ docker_tls_path }}/cert.pem"
+
+- name: restart docker
+  service: name=docker state=restarted
+  sudo: yes
+  when: dockerconf | changed
+
+- name: python
+  apt: name=python state=latest
+  sudo: yes
+
+- name: pip install script
+  get_url: dest=/tmp/get_pip.py url=https://bootstrap.pypa.io/get-pip.py
+
+- name: pip
+  command: python /tmp/get_pip.py creates=/usr/local/bin/pip
+  sudo: yes
+
+- name: docker-py
+  pip: name=docker-py state=latest
+  sudo: yes
+
+- name: stop running docker containers
+  shell: docker stop $(docker ps -a -q) || true
+  tags:
+    - docker-rebuild
+    - swarm
+
+- name: remove docker containers
+  shell: docker rm $(docker ps -a -q) || true
+  tags:
+    - docker-rebuild
+    - swarm

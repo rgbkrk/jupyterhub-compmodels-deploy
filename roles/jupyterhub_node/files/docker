@@ -1,0 +1,1 @@
+DOCKER_OPTS="--icc=false --tlsverify --tlscacert={{ docker_tls_path }}/docker-tls-ca.pem --tlscert={{ docker_tls_path }}/docker-tls-cert.pem --tlskey={{ docker_tls_path }}/docker-tls-key.pem -H=0.0.0.0:2376"
