@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+#
+# Generate a set of TLS credentials that can be used to run development mode.
+#
+# Based on script by Ash Wilson (@smashwilson)
+# https://github.com/cloudpipe/cloudpipe/pull/45/files#diff-15
+
+set -o errexit
+
+FIRSTCERT="true"
+PASSFILE="/root/certificates/dev.password"
+PASSOPT="file:/root/certificates/dev.password"
+
+# Randomly create a password file, if you haven't supplied one already.
+# For development mode, we'll just use the same (random) password for everything.
+if [ ! -f "${PASSFILE}" ]; then
+  echo ">> creating a random password in ${PASSFILE}."
+  touch ${PASSFILE}
+  chmod 600 ${PASSFILE}
+  # "If the same pathname argument is supplied to -passin and -passout arguments then the first
+  # line will be used for the input password and the next line for the output password."
+  cat /dev/random | head -c 128 | base64 | sed -n '{p;p;}' >> ${PASSFILE}
+  echo "<< random password created"
+fi
+
+# Generate the certificate authority that we'll use as the root for all the things.
+echo ">> generating a certificate authority"
+openssl genrsa -des3 \
+  -passout ${PASSOPT} \
+  -out /root/certificates/ca-key.pem 2048
+openssl req -new -x509 -days 365 \
+  -batch \
+  -passin ${PASSOPT} \
+  -key /root/certificates/ca-key.pem \
+  -passout ${PASSOPT} \
+  -out /root/certificates/ca.pem
+echo "<< certificate authority generated."
+
+# Generate a named keypair
+keypair() {
+  local NAME=$1
+  local HOSTNAME=$2
+  local CLIENT=$3
+
+  local SERIALOPT="-CAserial /root/certificates/ca.srl"
+  local EXTOPT=""
+
+  if [ "${FIRSTCERT}" = "true" ]; then
+    SERIALOPT="-CAcreateserial"
+    FIRSTCERT="false"
+  fi
+
+  if [ "${CLIENT}" = "true" ]; then
+    echo "extendedKeyUsage = clientAuth,serverAuth" > /root/certificates/extclient.cnf
+    EXTOPT="-extfile /root/certificates/extclient.cnf"
+  fi
+
+  echo ">> generating a keypair for: ${NAME}"
+
+  echo ".. key"
+  openssl genrsa -des3 \
+    -passout ${PASSOPT} \
+    -out /root/certificates/${NAME}-key.pem 2048
+
+  echo ".. request"
+  openssl req -subj "/CN=${HOSTNAME}" -new \
+    -batch \
+    -passin ${PASSOPT} \
+    -key /root/certificates/${NAME}-key.pem \
+    -passout ${PASSOPT} \
+    -out /root/certificates/${NAME}-req.csr
+
+  echo ".. certificate"
+  openssl x509 -req -days 365 \
+    -passin ${PASSOPT} \
+    -in /root/certificates/${NAME}-req.csr \
+    -CA /root/certificates/ca.pem \
+    -CAkey /root/certificates/ca-key.pem \
+    ${SERIALOPT} \
+    ${EXTOPT} \
+    -out /root/certificates/${NAME}-cert.pem
+
+  echo ".. removing key password"
+  openssl rsa \
+    -passin ${PASSOPT} \
+    -in /root/certificates/${NAME}-key.pem \
+    -out /root/certificates/${NAME}-key.pem
+
+  echo "<< ${NAME} keypair generated."
+}
+
+# Keypair for the main compmodels server
+keypair compmodels compmodels.tmpnb.org "true"
+
+# Keypairs for the compmodel nodes
+keypair compmodels-node-01 compmodels-node-01.tmpnb.org "false"
