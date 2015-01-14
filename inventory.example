@@ -1,5 +1,14 @@
-[jupyterhub]
-jupyterhub_server ansible_ssh_user=root ansible_ssh_host=<public IP>
+[jupyterhub_host]
+jupyterhub_host ansible_ssh_user=root ansible_ssh_host=<public IP>
+
+[jupyterhub_nodes]
+jupyterhub_node1 ansible_ssh_user=root ansible_ssh_host=<public IP>
+
+[jupyterhub_host:vars]
+docker_server=true
+
+[jupyterhub_nodes:vars]
+docker_server=false
 
 [proxy]
 proxy_server ansible_ssh_user=root ansible_ssh_host=<public IP> jupyterhub_host=<snet IP of jupyterhub>
