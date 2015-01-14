@@ -54,13 +54,13 @@
   template: src=docker_server dest=/etc/default/docker mode=0644
   sudo: yes
   register: dockerconf
-  when: docker_server == "true"
+  when: '"jupyterhub_host" in group_names'
 
 - name: install client docker configuration
   template: src=docker_client dest=/etc/default/docker mode=0644
   sudo: yes
   register: dockerconf
-  when: docker_server == "false"
+  when: '"jupyterhub_nodes" in group_names'
 
 - name: create docker TLS directory
   file: path={{ docker_tls_path }} state=directory
