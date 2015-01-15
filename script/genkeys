@@ -40,7 +40,7 @@ echo "<< certificate authority generated."
 keypair() {
   local NAME=$1
   local HOSTNAME=$2
-  local CLIENT=$3
+  local IP=$3
 
   local SERIALOPT="-CAserial /root/certificates/ca.srl"
   local EXTOPT=""
@@ -50,11 +50,6 @@ keypair() {
     FIRSTCERT="false"
   fi
 
-  if [ "${CLIENT}" = "true" ]; then
-    echo "extendedKeyUsage = clientAuth,serverAuth" > /root/certificates/extclient.cnf
-    EXTOPT="-extfile /root/certificates/extclient.cnf"
-  fi
-
   echo ">> generating a keypair for: ${NAME}"
 
   echo ".. key"
@@ -62,13 +57,17 @@ keypair() {
     -passout ${PASSOPT} \
     -out /root/certificates/${NAME}-key.pem 2048
 
+  cp /root/certificates/openssl.cnf /root/certificates/openssl-${NAME}.cnf
+  echo "IP.1 = ${IP}" >> /root/certificates/openssl-${NAME}.cnf
+
   echo ".. request"
   openssl req -subj "/CN=${HOSTNAME}" -new \
     -batch \
     -passin ${PASSOPT} \
     -key /root/certificates/${NAME}-key.pem \
     -passout ${PASSOPT} \
-    -out /root/certificates/${NAME}-req.csr
+    -out /root/certificates/${NAME}-req.csr \
+    -config /root/certificates/openssl-${NAME}.cnf
 
   echo ".. certificate"
   openssl x509 -req -days 365 \
@@ -77,8 +76,9 @@ keypair() {
     -CA /root/certificates/ca.pem \
     -CAkey /root/certificates/ca-key.pem \
     ${SERIALOPT} \
-    ${EXTOPT} \
-    -out /root/certificates/${NAME}-cert.pem
+    -extensions v3_req \
+    -extfile /root/certificates/openssl-${NAME}.cnf \
+    -out /root/certificates/${NAME}-cert.pem \
 
   echo ".. removing key password"
   openssl rsa \
@@ -90,13 +90,13 @@ keypair() {
 }
 
 # Keypair for the main compmodels server
-keypair compmodels compmodels.tmpnb.org "true"
+keypair compmodels compmodels.tmpnb.org 104.130.20.157
 
 # Keypairs for the compmodel nodes
-keypair compmodels-node-01 compmodels-node-01.tmpnb.org "false"
-keypair compmodels-node-02 compmodels-node-02.tmpnb.org "false"
-keypair compmodels-node-03 compmodels-node-03.tmpnb.org "false"
-keypair compmodels-node-04 compmodels-node-04.tmpnb.org "false"
-keypair compmodels-node-05 compmodels-node-05.tmpnb.org "false"
-keypair compmodels-node-06 compmodels-node-06.tmpnb.org "false"
-keypair compmodels-node-07 compmodels-node-07.tmpnb.org "false"
+keypair compmodels-node-01 compmodels-node-01.tmpnb.org 104.130.19.138
+keypair compmodels-node-02 compmodels-node-02.tmpnb.org 104.130.19.46
+keypair compmodels-node-03 compmodels-node-03.tmpnb.org 104.130.18.168
+keypair compmodels-node-04 compmodels-node-04.tmpnb.org 104.130.18.169
+keypair compmodels-node-05 compmodels-node-05.tmpnb.org 104.130.18.170
+keypair compmodels-node-06 compmodels-node-06.tmpnb.org 104.130.18.171
+keypair compmodels-node-07 compmodels-node-07.tmpnb.org 104.130.18.172
