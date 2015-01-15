@@ -94,3 +94,9 @@ keypair compmodels compmodels.tmpnb.org "true"
 
 # Keypairs for the compmodel nodes
 keypair compmodels-node-01 compmodels-node-01.tmpnb.org "false"
+keypair compmodels-node-02 compmodels-node-02.tmpnb.org "false"
+keypair compmodels-node-03 compmodels-node-03.tmpnb.org "false"
+keypair compmodels-node-04 compmodels-node-04.tmpnb.org "false"
+keypair compmodels-node-05 compmodels-node-05.tmpnb.org "false"
+keypair compmodels-node-06 compmodels-node-06.tmpnb.org "false"
+keypair compmodels-node-07 compmodels-node-07.tmpnb.org "false"

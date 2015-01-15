@@ -22,7 +22,7 @@
     - docker-rebuild
 
 - name: copy jupyterhub_config.py to the jupyterhub directory
-  copy:
+  template:
     src: jupyterhub_config.py
     dest: /srv/jupyterhub/jupyterhub_config.py
   sudo: yes
@@ -31,6 +31,12 @@
 
 - name: create the userlist
   template: src=userlist.j2 dest=/srv/jupyterhub/userlist
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: add swarmspawner.py
+  copy: src=swarmspawner.py dest=/srv/jupyterhub/swarmspawner.py
   sudo: yes
   tags:
     - docker-rebuild

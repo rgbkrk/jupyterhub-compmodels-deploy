@@ -16,13 +16,14 @@ c.DockerOAuthenticator.create_system_users = True
 c.Authenticator.whitelist = whitelist = set()
 
 # Configure the spawner
-c.JupyterHub.spawner_class = 'dockerspawner.SystemUserSpawner'
+c.JupyterHub.spawner_class = 'swarmspawner.SwarmSpawner'
 c.SystemUserSpawner.container_image = 'compmodels/systemuser'
+c.DockerSpawner.tls_cert = '{{ docker_tls_path }}/cert.pem'
+c.DockerSpawner.tls_key = '{{ docker_tls_path }}/key.pem'
 
 # The docker instances need access to the Hub, so the default loopback port
 # doesn't work:
-from IPython.utils.localinterfaces import public_ips
-c.JupyterHub.hub_ip = public_ips()[0]
+c.JupyterHub.hub_ip = '{{ ansible_ssh_host }}'
 
 # Add users to the admin list, the whitelist, and also record their user ids
 root = os.environ.get('OAUTHENTICATOR_DIR', os.path.dirname(__file__))
