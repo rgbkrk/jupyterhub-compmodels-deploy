@@ -1,18 +1,75 @@
 ---
-- name: install nfs server
-  action: apt pkg=nfs-kernel-server state=present update_cache=yes
-  tags:
-    -nfs
-
-- name: install nfs client
-  action: apt pkg=nfs-common state=present
-  tags:
-    -nfs
-
-- name: ensure nfs service is running
-  action: service name={{item}} state=started
-  when: is_debian_or_ubuntu
+- name: install mdadm and nfs packages
+  apt: update_cache=yes cache_valid_time=600 name=mdadm,nfs-kernel-server,nfs-common state=latest
+  sudo: yes
   tags:
     - nfs
-  with_items:
-    - nfs-kernel-server
+
+- name: run the lsi-cards script
+  script: lsi-cards {{ ansible_fqdn }} /var/lib/docker creates=/etc/{{ ansible_fqdn }}.raid-setup
+  sudo: yes
+  tags:
+    - nfs
+
+- name: stop nfs
+  service: name=nfs-kernel-server state=stopped
+  sudo: yes
+  tags:
+    - nfs
+
+- name: unmount existing volumes
+  shell: umount {{ nfsmount }} || true
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create root directory for NFS volume
+  file: path={{ nfspath }} state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create sub directory for NFS volume
+  file: path={{ nfspath }}/home state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create directory for NFS mount
+  file: path={{ nfsmount }} state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: mount NFS volume
+  shell: mount --bind {{ nfsmount }} {{ nfspath }}/home
+  sudo: yes
+  tags:
+    - nfs
+
+- name: install /etc/exports
+  template: src=exports dest=/etc/exports mode=0644
+  sudo: yes
+  tags:
+    - nfs
+
+- name: tweak idmapd settings
+  lineinfile:
+    dest: /etc/idmapd.conf
+    regexp: '(# )?Domain =.*'
+    line: 'Domain = {{ nfsdomain }}'
+  sudo: yes
+  tags:
+    - nfs
+
+- name: start nfs
+  service: name=nfs-kernel-server state=started
+  sudo: yes
+  tags:
+    - nfs
+
+- name: restart idmapd
+  service: name=idmapd state=restarted
+  sudo: yes
+  tags:
+    - nfs

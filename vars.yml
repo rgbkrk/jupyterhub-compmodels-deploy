@@ -9,3 +9,14 @@ github_usernames:
 
 # Path to assignments
 assignment_path: /path/to/your/assignments
+
+# IP address of the NFS server
+nfsserver: <ip_address>
+# Path to the NFS volume on the host
+nfspath: /path/to/volume
+# Path to mount NFS on the clients
+nfsmount: /path/to/mount
+# Options to mount NFS with
+nfsoptions: rw
+# Domain for idmapd
+nfsdomain: localdomain
