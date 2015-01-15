@@ -7,14 +7,5 @@ github_usernames:
 - rgbkrk
 - minrk
 
-# Instructor user accounts
-instructors:
-- jhamrick
-
-# Student user accounts
-students:
-- rgbkrk
-- minrk
-
 # Path to assignments
 assignment_path: /path/to/your/assignments
