@@ -6,7 +6,7 @@
     - nfs
 
 - name: run the lsi-cards script
-  script: lsi-cards {{ ansible_fqdn }} /var/lib/docker/export creates=/etc/{{ ansible_fqdn }}.raid-setup
+  script: lsi-cards {{ ansible_fqdn }} /var/lib/docker creates=/etc/{{ ansible_fqdn }}.raid-setup
   sudo: yes
   tags:
     - nfs
@@ -24,7 +24,7 @@
     - nfs
 
 - name: create symlink from /var/lib/docker/export to /students
-  file: src=/var/lib/docker/export/students dest=/students state=link
+  file: src=/var/lib/docker/export dest=/students state=link
   sudo: yes
   tags:
     - nfs
