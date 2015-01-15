@@ -18,6 +18,8 @@ c.Authenticator.whitelist = whitelist = set()
 # Configure the spawner
 c.JupyterHub.spawner_class = 'dockerspawner.SystemUserSpawner'
 c.SystemUserSpawner.container_image = 'compmodels/systemuser'
+c.DockerSpawner.tls_cert = '/root/.docker/cert.pem'
+c.DockerSpawner.tls_key = '/root/.docker/key.pem'
 
 # The docker instances need access to the Hub, so the default loopback port
 # doesn't work:

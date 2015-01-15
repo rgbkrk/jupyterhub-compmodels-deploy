@@ -27,5 +27,6 @@
         - /var/run/docker.sock:/docker.sock
         - /var/run/restuser.sock:/restuser.sock
         - /srv/jupyterhub_db:/srv/jupyterhub_db
+        - /root/.docker:/root/.docker
   tags:
     - docker-rebuild
