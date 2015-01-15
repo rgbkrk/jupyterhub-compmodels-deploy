@@ -1,0 +1,2 @@
+/var/lib/docker/export       192.168.1.0/24(rw,fsid=0,no_subtree_check,sync)
+/var/lib/docker/export/home 192.168.1.0/24(rw,nohide,insecure,no_subtree_check,sync)

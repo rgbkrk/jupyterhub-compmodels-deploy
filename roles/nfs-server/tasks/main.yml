@@ -1,6 +1,6 @@
 ---
-- name: install mdadm
-  apt: update_cache=yes cache_valid_time=600 name=mdadm state=latest
+- name: install mdadm and nfs packages
+  apt: update_cache=yes cache_valid_time=600 name=mdadm,nfs-kernel-server,nfs-common state=latest
   sudo: yes
   tags:
     - nfs
@@ -11,20 +11,47 @@
   tags:
     - nfs
 
-- name: install nfs server
-  apt: name=nfs-kernel-server,nfs-common state=latest
+- name: install /etc/exports
+  file: src=exports dest=/etc/exports mode=0644
   sudo: yes
+  register: exportconf
   tags:
-    -nfs
+    - nfs
 
-- name: ensure nfs service is running
-  action: service name=nfs-kernel-server state=started
+- name: restart nfs
+  service: name=nfs-kernel-server state=restarted
+  sudo: yes
+  when: exportconf | changed
+  tags:
+    - nfs
+
+- name: restart nfs
+  service: name=idmapd state=restarted
+  sudo: yes
+  when: exportconf | changed
+  tags:
+    - nfs
+
+- name: create /var/lib/docker/export
+  file: path=/var/lib/docker/export state=directory
   sudo: yes
   tags:
     - nfs
 
-- name: create symlink from /var/lib/docker/export to /students
-  file: src=/var/lib/docker/export dest=/students state=link
+- name: create /var/lib/docker/export/home
+  file: path=/var/lib/docker/export/home state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create /home
+  file: path=/home state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: mount /var/lib/docker/export/home as /home
+  shell: mount --bind /home /var/lib/docker/export/home
   sudo: yes
   tags:
     - nfs
