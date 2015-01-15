@@ -22,7 +22,7 @@
     - docker-rebuild
 
 - name: copy jupyterhub_config.py to the jupyterhub directory
-  copy:
+  template:
     src: jupyterhub_config.py
     dest: /srv/jupyterhub/jupyterhub_config.py
   sudo: yes

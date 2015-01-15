@@ -49,3 +49,5 @@ class SwarmSpawner(SystemUserSpawner):
         self.user.server.ip = self.node_info[name]
         self.log.info("{} was started on {} ({}:{})".format(
             self.container_name, name, self.user.server.ip, self.user.server.port))
+
+        self.log.info(self.env)
