@@ -33,9 +33,20 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-CARDS=`lsblk -i -o KNAME,MODEL | grep NWD-BLP4-1600 | awk '{print $1}'`
+MACHINE_ID=${1}
+[ -z "$MACHINE_ID" ] && echo "error; machine ID should be passed in" && exit 1
 
-apt-get install -y mdadm
+MOUNT_POINT=${2}
+[ -z "$MOUNT_POINT" ] && echo "error; mount point should be passed as the second argument" && exit 1
+
+GFILE="/etc/${MACHINE_ID}.raid-setup"
+if [ -e "${GFILE}" ]
+then
+  echo "${GFILE} exists, raid already setup?"
+exit 1
+fi
+
+CARDS=`lsblk -i -o KNAME,MODEL | grep NWD-BLP4-1600 | awk '{print $1}'`
 
 for blockdev in $CARDS
 do
@@ -46,16 +57,6 @@ do
   echo 1 | tee /sys/block/${blockdev}/queue/nomerges
   echo 512 | tee /sys/block/${blockdev}/device/queue_depth
 done
-
-MACHINE_ID=${1}
-[ -z "$MACHINE_ID" ] && echo "error; machine ID should be passed in" && exit 1
-
-GFILE="/etc/${MACHINE_ID}.raid-setup"
-if [ -e "${GFILE}" ]
-then
-  echo "${GFILE} exists, raid already setup?"
-exit 1
-fi
 
 if [ -b "/dev/md0" ]
 then
@@ -72,12 +73,8 @@ yes | mdadm --create --verbose -f /dev/md0 --level=stripe --raid-devices=2 ${BLO
 
 mkfs.ext4 /dev/md0
 
-touch /etc/${MACHINE_ID}.raid-setup
-
-
-MOUNT_POINT=${2}
-[ -z "$MOUNT_POINT" ] && echo "error; mount point should be passed as the second argument" && exit 1
-
 mkdir $MOUNT_POINT
 echo "UUID=`blkid -s UUID -o value /dev/md0`  $MOUNT_POINT ext4  noatime 0  0" >> /etc/fstab
 mount $MOUNT_POINT
+
+touch "${GFILE}"
