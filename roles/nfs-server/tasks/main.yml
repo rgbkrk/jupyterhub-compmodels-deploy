@@ -11,47 +11,65 @@
   tags:
     - nfs
 
+- name: stop nfs
+  service: name=nfs-kernel-server state=stopped
+  sudo: yes
+  tags:
+    - nfs
+
+- name: unmount existing volumes
+  shell: umount {{ nfsmount }} || true
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create root directory for NFS volume
+  file: path={{ nfspath }} state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create sub directory for NFS volume
+  file: path={{ nfspath }}/home state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create directory for NFS mount
+  file: path={{ nfsmount }} state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: mount NFS volume
+  shell: mount --bind {{ nfsmount }} {{ nfspath }}/home
+  sudo: yes
+  tags:
+    - nfs
+
 - name: install /etc/exports
-  file: src=exports dest=/etc/exports mode=0644
+  template: src=exports dest=/etc/exports mode=0644
   sudo: yes
-  register: exportconf
   tags:
     - nfs
 
-- name: restart nfs
-  service: name=nfs-kernel-server state=restarted
+- name: tweak idmapd settings
+  lineinfile:
+    dest: /etc/idmapd.conf
+    regexp: '(# )?Domain =.*'
+    line: 'Domain = {{ nfsdomain }}'
   sudo: yes
-  when: exportconf | changed
   tags:
     - nfs
 
-- name: restart nfs
+- name: start nfs
+  service: name=nfs-kernel-server state=started
+  sudo: yes
+  tags:
+    - nfs
+
+- name: restart idmapd
   service: name=idmapd state=restarted
-  sudo: yes
-  when: exportconf | changed
-  tags:
-    - nfs
-
-- name: create /var/lib/docker/export
-  file: path=/var/lib/docker/export state=directory
-  sudo: yes
-  tags:
-    - nfs
-
-- name: create /var/lib/docker/export/home
-  file: path=/var/lib/docker/export/home state=directory
-  sudo: yes
-  tags:
-    - nfs
-
-- name: create /home
-  file: path=/home state=directory
-  sudo: yes
-  tags:
-    - nfs
-
-- name: mount /var/lib/docker/export/home as /home
-  shell: mount --bind /home /var/lib/docker/export/home
   sudo: yes
   tags:
     - nfs

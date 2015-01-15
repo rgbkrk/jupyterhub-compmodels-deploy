@@ -22,6 +22,7 @@
   - ['secrets.yml', 'secrets.vault.yml']
   - ['vars.local.yml', 'vars.yml']
   roles:
+  - nfs
   - jupyterhub_node
 
 - hosts: jupyterhub_host
