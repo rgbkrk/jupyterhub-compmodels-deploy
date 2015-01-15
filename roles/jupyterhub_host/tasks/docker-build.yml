@@ -35,6 +35,12 @@
   tags:
     - docker-rebuild
 
+- name: add swarmspawner.py
+  copy: src=swarmspawner.py dest=/srv/jupyterhub/swarmspawner.py
+  sudo: yes
+  tags:
+    - docker-rebuild
+
 - name: build compmodels/jupyterhub image
   docker_image:
     path: /srv/jupyterhub
