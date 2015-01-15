@@ -21,7 +21,7 @@
   when: grubbed | changed
 
 - name: wait for server to relaunch
-  local_action: wait_for host={{ inventory_hostname }} state=started
+  local_action: wait_for host={{ ansible_ssh_host }} state=started
   when: grubbed | changed
 
 - name: see if HTTPS transport is already present

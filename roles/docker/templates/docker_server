@@ -1,1 +1,1 @@
-DOCKER_OPTS="--icc=false"
+DOCKER_OPTS="--icc=false -H=unix:///var/run/docker.sock"
