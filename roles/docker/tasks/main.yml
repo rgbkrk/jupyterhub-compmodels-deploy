@@ -100,7 +100,10 @@
     - swarm
 
 - name: remove docker containers
-  shell: docker rm $(docker ps -a -q) || true
+  shell: docker rm -v $(docker ps -a -q) || true
   tags:
     - docker-rebuild
     - swarm
+
+- cron: name="docker cleanup" minute=15
+        user="root" job="/usr/bin/docker rmi $(/usr/bin/docker images -q --filter 'dangling=true')"
