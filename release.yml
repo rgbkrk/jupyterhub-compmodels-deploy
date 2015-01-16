@@ -16,7 +16,7 @@
   vars_prompt:
     assignment: "Which assignment?"
 
-- hosts: jupyterhub
+- hosts: jupyterhub_host
   vars_files:
     - ['secrets.yml', 'secrets.vault.yml']
     - ['vars.local.yml', 'vars.yml']
