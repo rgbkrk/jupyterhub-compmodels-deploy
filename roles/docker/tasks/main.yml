@@ -107,4 +107,3 @@
 
 - cron: name="docker cleanup" minute=15
         user="root" job="/usr/bin/docker rmi $(/usr/bin/docker images -q --filter 'dangling=true')"
-        cron_file=ansible_docker-cleanup
