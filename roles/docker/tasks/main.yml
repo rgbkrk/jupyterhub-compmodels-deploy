@@ -53,13 +53,11 @@
 - name: install server docker configuration
   template: src=docker_server dest=/etc/default/docker mode=0644
   sudo: yes
-  register: dockerconf
   when: '"jupyterhub_host" in group_names'
 
 - name: install client docker configuration
   template: src=docker_client dest=/etc/default/docker mode=0644
   sudo: yes
-  register: dockerconf
   when: '"jupyterhub_nodes" in group_names'
 
 - name: create docker TLS directory
@@ -79,7 +77,6 @@
 - name: restart docker
   service: name=docker state=restarted
   sudo: yes
-  when: dockerconf | changed
 
 - name: python
   apt: name=python state=latest
