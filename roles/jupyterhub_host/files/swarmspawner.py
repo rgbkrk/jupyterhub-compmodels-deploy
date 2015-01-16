@@ -1,5 +1,5 @@
 from tornado import gen
-from dockerspawner import SystemUserSpawner
+from dockerspawner import DockerSpawner, SystemUserSpawner
 
 class SwarmSpawner(SystemUserSpawner):
 
@@ -30,7 +30,7 @@ class SwarmSpawner(SystemUserSpawner):
         self.container_id = ''
 
     @gen.coroutine
-    def start(self, **kwargs):
+    def start(self, image=None, **extra_create_kwargs):
         # look up mapping of node names to ip addresses
         info = yield self.docker('info')
         node_info = info['DriverStatus']
@@ -42,7 +42,11 @@ class SwarmSpawner(SystemUserSpawner):
         self.log.debug("Swarm nodes are: {}".format(self.node_info))
 
         # start the container
-        yield super(SwarmSpawner, self).start(**kwargs)
+        if 'mem_limit' not in extra_create_kwargs:
+            extra_create_kwargs['mem_limit'] = '1g'
+        if 'working_dir' not in extra_create_kwargs:
+            extra_create_kwargs['working_dir'] = self.homedir
+        yield DockerSpawner.start(self, image=image, **extra_create_kwargs)
 
         # figure out what the node is and then get its ip
         name = yield self.lookup_node_name()
