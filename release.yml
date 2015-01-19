@@ -31,7 +31,18 @@
         src: '/tmp/assignment.tar.gz'
         dest: '/srv/assignments/assignment.tar.gz'
 
-    - name: extract assignment to directories
+    - name: create /srv/skeldir
+      file: path=/srv/skeldir state=directory
+      sudo: yes
+
+    - name: extract assignment to skeleton directory
+      unarchive:
+        copy: no
+        src: /srv/assignments/assignment.tar.gz
+        dest: /srv/skeldir
+      sudo: yes
+
+    - name: extract assignment to user directories
       release_assignment:
         src: '/srv/assignments/assignment.tar.gz'
         users: "{{ students | union(instructors) }}"

@@ -32,7 +32,7 @@
     - start
 
 - name: start restuser
-  command: daemon -n restuser -o /var/log/restuser.log -- python /srv/restuser/restuser.py
+  command: daemon -n restuser -o /var/log/restuser.log -- python /srv/restuser/restuser.py --skeldir=/srv/skeldir
   sudo: yes
   tags:
     - start
