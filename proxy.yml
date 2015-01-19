@@ -5,4 +5,5 @@
   - ['vars.local.yml', 'vars.yml']
   roles:
   - common
+  - docker
   - proxy

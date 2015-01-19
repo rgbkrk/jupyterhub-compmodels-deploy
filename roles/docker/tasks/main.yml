@@ -53,7 +53,7 @@
 - name: install server docker configuration
   template: src=docker_server dest=/etc/default/docker mode=0644
   sudo: yes
-  when: '"jupyterhub_host" in group_names'
+  when: '"jupyterhub_nodes" not in group_names'
 
 - name: install client docker configuration
   template: src=docker_client dest=/etc/default/docker mode=0644
@@ -63,6 +63,7 @@
 - name: create docker TLS directory
   file: path={{ docker_tls_path }} state=directory
   sudo: yes
+  when: '"jupyterhub_nodes" in group_names or "jupyterhub_host" in group_names'
 
 - name: install docker TLS credentials
   template: src={{ item.from }} dest={{ item.to }} mode=0644
@@ -73,6 +74,7 @@
       to: "{{ docker_tls_path }}/key.pem"
     - from: cert.pem.j2
       to: "{{ docker_tls_path }}/cert.pem"
+  when: '"jupyterhub_nodes" in group_names or "jupyterhub_host" in group_names'
 
 - name: restart docker
   service: name=docker state=restarted
