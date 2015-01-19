@@ -5,6 +5,12 @@
   tags:
     - swarm
 
+- name: uninstall swarm
+  file: path=/srv/gocode state=absent
+  sudo: yes
+  tags:
+    - swarm
+
 - name: create the /srv/gocode directory
   file: path=/srv/gocode state=directory
   sudo: yes
@@ -12,12 +18,12 @@
     - swarm
 
 - name: install swarm
-  shell: GOPATH=/srv/gocode go get -u github.com/docker/swarm
+  shell: GOPATH=/srv/gocode go get -u github.com/jhamrick/swarm
   sudo: yes
   tags:
     - swarm
 
-- name: symlink swam binary
+- name: symlink swarm binary
   file: src=/srv/gocode/bin/swarm dest=/usr/local/bin/swarm state=link
   sudo: yes
   tags:
@@ -46,8 +52,14 @@
   tags:
     - swarm
 
+- name: remove old swarm logs
+  file: path=/var/log/swarm.log state=absent
+  sudo: yes
+  tags:
+    - swarm
+
 - name: start swarm manager
-  command: daemon -n swarm -o /var/log/swarm.log -- swarm manage --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem --discovery file:///srv/cluster -H=127.0.0.1:2735
+  command: daemon -n swarm -o /var/log/swarm.log -- swarm --debug manage --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem --discovery file:///srv/cluster -H=127.0.0.1:2735
   sudo: yes
   tags:
     - swarm
