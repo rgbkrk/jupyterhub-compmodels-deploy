@@ -20,3 +20,7 @@ nfsmount: /path/to/mount
 nfsoptions: rw
 # Domain for idmapd
 nfsdomain: localdomain
+
+# Proxy stuff
+notebook_static_files: /srv/ipython/IPython/html/static/
+
