@@ -1,0 +1,45 @@
+---
+- name: install packages with apt
+  apt: update_cache=yes cache_valid_time=600 name=python-netifaces,duplicity state=latest
+  sudo: yes
+  tags:
+    - backup
+
+- name: install pyrax
+  pip: name=pyrax state=latest
+  sudo: yes
+  tags:
+    - backup
+
+- name: install keystoneclient
+  pip: name=python-keystoneclient state=latest
+  sudo: yes
+  tags:
+    - backup
+
+- name: create /srv/backup
+  file: path=/srv/backup state=directory
+  sudo: yes
+  tags:
+    - backup
+
+- name: upload duplicity script
+  template: src=duplicity.sh.j2 dest=/srv/backup/duplicity.sh mode=700
+  sudo: yes
+  tags:
+    - backup
+
+- name: upload restore script
+  template: src=restore.sh.j2 dest=/srv/backup/restore.sh mode=700
+  sudo: yes
+  tags:
+    - backup
+
+- name: schedule duplicity backup
+  cron:
+    name: duplicity backup
+    minute: 5
+    user: root
+    job: /srv/backup/duplicity.sh
+  tags:
+    - backup
