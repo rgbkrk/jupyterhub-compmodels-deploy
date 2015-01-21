@@ -60,3 +60,5 @@ vars.local.yml
 inventory
 secrets.yml
 certificates
+/users.yml
+/survey.csv

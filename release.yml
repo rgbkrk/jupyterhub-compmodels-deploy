@@ -19,6 +19,7 @@
 - hosts: jupyterhub_host
   vars_files:
     - ['secrets.yml', 'secrets.vault.yml']
+    - ['users.yml', 'users.vault.yml']
     - ['vars.local.yml', 'vars.yml']
 
   tasks:

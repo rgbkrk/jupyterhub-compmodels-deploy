@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import yaml
+import pandas as pd
+import os
+import sys
+from collections import OrderedDict
+
+survey_path = sys.argv[1]
+
+students = pd.read_csv(survey_path)['What is your GitHub username?']
+students = sorted([os.path.split(x)[1] for x in students])
+
+with open("users.yml", "r") as fh:
+    instructors = yaml.load(fh.read())["instructors"]
+
+users = dict(instructors=instructors, students=students)
+
+with open("users.yml", "w") as fh:
+    fh.write("---\n")
+    fh.write(yaml.dump(users, default_flow_style=False))
