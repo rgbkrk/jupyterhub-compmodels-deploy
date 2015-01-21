@@ -1,0 +1,18 @@
+#!/bin/bash
+gpg_key={{ gpg_key }}
+src="/var/lib/docker/export/home"
+dest="cf+http://compmodels"
+
+# Rackspace
+export CLOUDFILES_USERNAME="{{ rackspace_username }}"
+export CLOUDFILES_APIKEY="{{ rackspace_api_key }}"
+export PASSPHRASE='{{ gpg_pass }}'
+
+
+duplicity --verbosity notice \
+        --encrypt-key "$gpg_key" \
+        --full-if-older-than 7D \
+        --num-retries 3 \
+        --asynchronous-upload \
+        --volsize 10 \
+         "${src}" "${dest}"
