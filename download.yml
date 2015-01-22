@@ -1,0 +1,26 @@
+---
+- hosts: jupyterhub_host
+  vars_files:
+    - ['secrets.yml', 'secrets.vault.yml']
+    - ['users.yml', 'users.vault.yml']
+    - ['vars.local.yml', 'vars.yml']
+
+  vars_prompt:
+    assignment: "Which assignment?"
+
+  tasks:
+    - name: collect submissions
+      collect_submissions:
+        src: '.nbgrader/submissions/{{ assignment }}.tar.gz'
+        dest: '/srv/assignments/submissions.tar.gz'
+        users: "{{ instructors }}"
+        overwrite: yes
+      sudo: yes
+
+    - name: download submissions
+      fetch:
+        src: '/srv/assignments/submissions.tar.gz'
+        dest: '{{ assignment_path }}/{{ assignment }}/submissions.tar.gz'
+        flat: yes
+        fail_on_missing: yes
+      sudo: yes
