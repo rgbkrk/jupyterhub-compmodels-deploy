@@ -5,7 +5,7 @@ import os
 import sys
 
 # Base configuration
-c.JupyterHub.log_level = 10
+c.JupyterHub.log_level = "INFO"
 c.JupyterHub.admin_users = admin = set()
 c.JupyterHub.db_url = 'sqlite:////srv/jupyterhub_db/jupyterhub.sqlite'
 

@@ -42,6 +42,8 @@
   tasks:
     - name: assemble user list
       script: ./script/assemble_users "{{ survey_path }}"
+      tags:
+        - docker-rebuild
 
 - hosts: jupyterhub_host
   vars_files:

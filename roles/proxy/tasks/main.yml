@@ -2,6 +2,8 @@
 - name: pull docker image for user containers
   command: docker pull jupyter/systemuser
   sudo: yes
+  tags:
+    - docker-rebuild
 
 # Get static resources from the userland container
 - name: static files container
@@ -12,6 +14,8 @@
     command: echo "#data-container-hack"
     volumes:
     - "{{ notebook_static_files }}"
+  tags:
+    - docker-rebuild
 
 - name: configuration directories
   file: state=directory dest={{ item }} mode=0755
@@ -45,3 +49,5 @@
     ports: "{{ nginx_ports }}"
     volumes_from:
     - static-files
+  tags:
+    - docker-rebuild
