@@ -5,10 +5,48 @@ import tarfile
 import os
 import shutil
 
+def extract_to(module, src, pth, prefix, user, overwrite=False):
+    root = os.path.abspath(os.path.join(pth, prefix))
+    ro_root = os.path.abspath(os.path.join(pth, prefix + " (read only)"))
+    if not root.startswith(pth):
+        module.fail_json(msg="Root path is invalid: {}".format(root))
+
+    # Skip existing directories, if we're not overwriting
+    if os.path.exists(root) and not overwrite:
+        return False
+
+    # Remove directory, if it already exists
+    if os.path.exists(root):
+        shutil.rmtree(root)
+    if os.path.exists(ro_root):
+        shutil.rmtree(ro_root)
+
+    # Extract the archive
+    tf = tarfile.open(src, 'r:gz')
+    tf.extractall(pth)
+    tf.close()
+
+    # Set permissions
+    module.run_command(
+        'chown -R {}:{} "{}"'.format(user, user, root), check_rc=True)
+    module.run_command(
+        'chmod -R u+rwX,og-rwx "{}"'.format(root), check_rc=True)
+
+    # Create a read-only version
+    shutil.copytree(root, ro_root)
+    module.run_command(
+        'chown -R {}:{} "{}"'.format(user, user, ro_root), check_rc=True)
+    module.run_command(
+        'chmod -R u+rX,u-w,og-rwx "{}"'.format(ro_root), check_rc=True)
+
+    return True
+
+
 def main():
     module = AnsibleModule(
         argument_spec={
             'src': dict(required=True),
+            'skeldir': dict(required=True),
             'users': dict(required=True, type='list'),
             'overwrite': dict(default=False, type='bool')
         }
@@ -16,18 +54,25 @@ def main():
 
     src = module.params["src"]
     users = module.params["users"]
+    skeldir = os.path.abspath(module.params["skeldir"])
     overwrite = module.params["overwrite"]
 
     # Open the tarfile, figure out the prefix
     tf = tarfile.open(src, 'r:gz')
-    prefix = os.path.commonprefix(tf.getnames())
+    prefix = os.path.commonprefix(tf.getnames()).rstrip("/")
     if prefix == '':
         module.fail_json(msg="Archive has no common prefix")
     tf.close()
 
-    # Extract the archive into the home directory of each user
+    # Copy to the skeleton directory
+    if skeldir == "/":
+        module.fail_json(msg="Skeleton directory is /, danger!")
+    extract_to(module, src, skeldir, prefix, "root", overwrite=True)
+
     changed = False
     changed_users = []
+
+    # Extract the archive into the home directory of each user
     for user in users:
         homedir = os.path.abspath('/home/{}'.format(user))
         if not homedir.startswith('/home/'):
@@ -35,31 +80,9 @@ def main():
         if not os.path.exists(homedir):
             module.fail_json(msg="Home directory does not exist: {}".format(homedir))
 
-        root = os.path.abspath(os.path.join(homedir, prefix))
-        if not root.startswith(homedir):
-            module.fail_json(msg="Root path is invalid: {}".format(root))
-
-        # Skip existing directories, if we're not overwriting
-        if os.path.exists(root) and not overwrite:
-            continue
-        else:
+        if extract_to(module, src, homedir, prefix, user, overwrite=overwrite):
             changed = True
             changed_users.append(user)
-
-        # Remove directory, if it already exists
-        if os.path.exists(root):
-            shutil.rmtree(root)
-
-        # Extract the archive
-        tf = tarfile.open(src, 'r:gz')
-        tf.extractall(homedir)
-        tf.close()
-
-        # Set permissions
-        module.run_command(
-            'chown -R {}:{} "{}"'.format(user, user, root), check_rc=True)
-        module.run_command(
-            'chmod -R u+rwX,og-rwx "{}"'.format(root), check_rc=True)
 
     module.exit_json(
         changed=changed,

@@ -36,14 +36,9 @@
       file: path=/srv/skeldir state=directory
       sudo: yes
 
-    - name: extract assignment to skeleton directory
-      unarchive:
-        copy: no
-        src: /srv/assignments/assignment.tar.gz
-        dest: /srv/skeldir
-      sudo: yes
-
     - name: extract assignment to user directories
       release_assignment:
         src: '/srv/assignments/assignment.tar.gz'
+        skeldir: '/srv/skeldir'
         users: "{{ students | union(instructors) }}"
+      sudo: yes
