@@ -34,6 +34,15 @@
   - nfs
   - jupyterhub_node
 
+- hosts: 127.0.0.1
+  connection: local
+  vars_files:
+    - ['vars.local.yml', 'vars.yml']
+
+  tasks:
+    - name: assemble user list
+      script: ./script/assemble_users "{{ survey_path }}"
+
 - hosts: jupyterhub_host
   vars_files:
   - ['secrets.yml', 'secrets.vault.yml']
