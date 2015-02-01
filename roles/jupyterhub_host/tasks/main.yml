@@ -6,7 +6,6 @@
 - include: docker-build.yml
 - include: accounts.yml
 - include: swarm.yml
-- include: backup.yml
 
 - name: create jupyterhub.sqlite
   file: path=/srv/jupyterhub/jupyterhub.sqlite state=touch mode=0600
