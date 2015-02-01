@@ -13,7 +13,7 @@
       collect_submissions:
         src: '.nbgrader/submissions/{{ assignment }}.tar.gz'
         dest: '/srv/assignments/submissions.tar.gz'
-        users: "{{ instructors }}"
+        users: "{{ students }}"
         overwrite: yes
       sudo: yes
 

@@ -41,4 +41,5 @@
         src: '/srv/assignments/assignment.tar.gz'
         skeldir: '/srv/skeldir'
         users: "{{ students | union(instructors) }}"
+        overwrite: no
       sudo: yes
