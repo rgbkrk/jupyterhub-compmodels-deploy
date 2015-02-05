@@ -134,6 +134,36 @@ Verify that it's not running with `ps aux | grep swarm` (you should only see the
 daemon -n swarm -o /var/log/swarm.log -- swarm --debug manage --tlsverify --tlscacert=/root/.docker/ca.pem --tlscert=/root/.docker/cert.pem --tlskey=/root/.docker/key.pem --discovery file:///srv/cluster -H=127.0.0.1:2735
 ```
 
+## Setup
+
+**This only ever needs to be done once!**
+
+You'll need to generate SSL/TLS certificates for the hub server and node servers.
+To do this, you can use the [keymaster](https://github.com/cloudpipe/keymaster) docker container.
+First, setup the certificates directory, password, and certificate authority:
+
+```
+mkdir certificates
+
+touch certificates/password
+chmod 600 certificates/password
+cat /dev/random | head -c 128 | base64 > certificates/password
+
+KEYMASTER="keymaster="docker run --rm -v $(pwd)/certificates/:/certificates/ cloudpipe/keymaster"
+
+${KEYMASTER} ca
+```
+
+Then, to generate a keypair for a server:
+
+```
+${KEYMASTER} signed-keypair -n server1 -h server1.website.com -p both -s IP:192.168.0.1
+```
+
+where `server1` is the name of a server (e.g. `compmodels`), `server1.website.com` is the hostname for the server, and `192.168.0.1` is the IP address of the server.
+
+You'll need to generate keypairs for the hub server and for each of the node servers.
+
 ## Deploying
 
 :warning: Note: you'll need to install Ansible from source (`devel` branch) to

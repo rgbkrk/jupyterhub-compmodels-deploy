@@ -52,6 +52,17 @@ for i in range(1, 8):
     with open("certificates/compmodels-node-0%d-key.pem" % i, "r") as fh:
         secrets["tls_keys"]["jupyterhub_node%d" % i] = literal(fh.read())
 
+# for testing
+with open("certificates/compmodels-hub-test-cert.pem", "r") as fh:
+    secrets["tls_certs"]["jupyterhub_host_test"] = literal(fh.read())
+with open("certificates/compmodels-hub-test-key.pem", "r") as fh:
+    secrets["tls_keys"]["jupyterhub_host_test"] = literal(fh.read())
+
+with open("certificates/compmodels-node-test-cert.pem", "r") as fh:
+    secrets["tls_certs"]["jupyterhub_node_test"] = literal(fh.read())
+with open("certificates/compmodels-node-test-key.pem", "r") as fh:
+    secrets["tls_keys"]["jupyterhub_node_test"] = literal(fh.read())
+
 with open("secrets.yml", "w") as fh:
     fh.write("---\n")
     fh.write(yaml.dump(secrets, default_flow_style=False))
