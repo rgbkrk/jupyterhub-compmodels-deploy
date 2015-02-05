@@ -62,3 +62,4 @@ secrets.yml
 certificates
 /users.yml
 /survey.csv
+vault-password
