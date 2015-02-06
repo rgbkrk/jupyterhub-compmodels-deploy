@@ -30,3 +30,13 @@
         - "{{ docker_tls_path }}:{{ docker_tls_path }}"
   tags:
     - docker-rebuild
+
+- name: get a jupyterhub api token
+  command: docker exec jupyterhub jupyterhub token root
+  register: jpy_api_token
+  sudo: yes
+  tags:
+    - stats
+    - docker-rebuild
+
+- include: stats.yml
