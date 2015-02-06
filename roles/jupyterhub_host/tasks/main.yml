@@ -7,9 +7,6 @@
 - include: accounts.yml
 - include: swarm.yml
 
-- name: create jupyterhub.sqlite
-  file: path=/srv/jupyterhub/jupyterhub.sqlite state=touch mode=0600
-
 - name: launch jupyterhub
   docker:
     state: running

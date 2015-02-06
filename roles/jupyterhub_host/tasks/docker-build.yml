@@ -1,4 +1,16 @@
 ---
+- name: create the jupyterhub_db directory
+  file: path=/srv/jupyterhub_db state=directory
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: create jupyterhub.sqlite
+  file: path=/srv/jupyterhub_db/jupyterhub.sqlite state=touch mode=0600
+  sudo: yes
+  tags:
+    - docker-rebuild
+
 - name: create the jupyterhub directory
   file: path=/srv/jupyterhub state=directory
   sudo: yes
