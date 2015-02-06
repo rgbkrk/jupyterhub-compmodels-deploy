@@ -8,5 +8,5 @@ if [ ! -e ${ROOT}//inventory ]; then
   exit 1
 fi
 
-VAULT_ARG=--vault-password-file ${ROOT}/vault-password
+VAULT_ARG="--vault-password-file ${ROOT}/vault-password"
 exec ansible-playbook ${ROOT}/deploy.yml -i ${ROOT}/inventory ${VAULT_ARG} $@
