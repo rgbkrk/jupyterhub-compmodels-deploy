@@ -6,4 +6,4 @@ RUN ln -s /srv/gocode/bin/swarm /usr/local/bin/swarm
 
 ADD cluster /srv/cluster
 
-CMD ["swarm", "manage", "--tlsverify", "--tlscacert={{ docker_tls_path }}/ca.pem", "--tlscert={{ docker_tls_path }}/cert.pem", "--tlskey={{ docker_tls_path }}/key.pem", "-H=127.0.0.1:2735", "file:///srv/cluster"]
+CMD ["swarm", "manage", "--tlsverify", "--tlscacert={{ docker_tls_path }}/ca.pem", "--tlscert={{ docker_tls_path }}/cert.pem", "--tlskey={{ docker_tls_path }}/key.pem", "-H=127.0.0.1:2376", "file:///srv/cluster"]

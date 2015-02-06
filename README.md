@@ -74,12 +74,12 @@ Essentially, swarm exposes an interface that looks just like the normal docker i
 For example, to get a list of the docker containers that are running through swarm (i.e., the user containers that are running on all node servers):
 
 ```
-docker --tls -H 127.0.0.1:2735 ps
+docker --tls -H 127.0.0.1:2376 ps
 ```
 
-To get the logs for a container running through swarm, you can run `docker --tls -H 127.0.0.1:2735 logs --tail=10 jupyter-username`, where `username` is the username for the user that you want logs from.
+To get the logs for a container running through swarm, you can run `docker --tls -H 127.0.0.1:2376 logs --tail=10 jupyter-username`, where `username` is the username for the user that you want logs from.
 
-The actual logs for swarm itself are stored at `/var/log/swarm.log`.
+Swarm itself also runs in a docker container, so you can get the logs with `docker logs --tail=10 swarm`.
 
 ### Culling containers
 
@@ -122,16 +122,10 @@ lsof -a -p $(pidof swarm) | wc -l
 ```
 
 If this number returned by this command gets up to 1024, then users trying to access their server will get a "500: Interal Server Error" message.
-The solution for now (until the bug is fixed in swarm proper) is to periodically restart swarm. First, stop swarm:
+The solution for now (until the bug is fixed in swarm proper) is to periodically restart swarm:
 
 ```
-daemon --name swarm --stop
-```
-
-Verify that it's not running with `ps aux | grep swarm` (you should only see the grep process). Then start it again with:
-
-```
-daemon -n swarm -o /var/log/swarm.log -- swarm --debug manage --tlsverify --tlscacert=/root/.docker/ca.pem --tlscert=/root/.docker/cert.pem --tlskey=/root/.docker/key.pem --discovery file:///srv/cluster -H=127.0.0.1:2735
+docker restart swarm
 ```
 
 ## Setup
