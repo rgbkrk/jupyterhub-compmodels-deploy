@@ -12,7 +12,7 @@
     - nfs
 
 - name: configure /etc/fstab on clients
-  mount: name={{ nfsmount }} src={{ nfsserver }}:/home fstype=nfs opts={{ nfsoptions }} state=mounted
+  mount: name={{ nfsmount }} src={{ hostvars[nfsserver]['ansible_ssh_host'] }}:/home fstype=nfs opts={{ nfsoptions }} state=mounted
   sudo: yes
   tags:
     - nfs
