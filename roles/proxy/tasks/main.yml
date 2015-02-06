@@ -1,10 +1,4 @@
 ---
-- name: pull docker image for user containers
-  command: docker pull jupyter/systemuser
-  sudo: yes
-  tags:
-    - docker-rebuild
-
 # Get static resources from the userland container
 - name: static files container
   docker:

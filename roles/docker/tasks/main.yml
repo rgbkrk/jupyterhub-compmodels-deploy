@@ -107,5 +107,14 @@
     - docker-rebuild
     - swarm
 
-- cron: name="docker cleanup" minute=15
-        user="root" job="/usr/bin/docker rmi $(/usr/bin/docker images -q --filter 'dangling=true')"
+- name: turn off docker cleanup cronjob
+  cron: name="docker cleanup" state=absent
+
+- name: pull docker images
+  command: docker pull {{ docker_image }}
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: run docker cleanup cronjob
+  cron: name="docker cleanup" minute=15 user="root" job="/usr/bin/docker rmi $(/usr/bin/docker images -q --filter 'dangling=true')"

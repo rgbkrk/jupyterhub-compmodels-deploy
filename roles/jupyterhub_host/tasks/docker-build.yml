@@ -1,12 +1,4 @@
 ---
-- name: pull jupyterhub service images
-  command: docker pull {{ item }}
-  with_items:
-  - jupyter/jupyterhub
-  sudo: yes
-  tags:
-    - docker-rebuild
-
 - name: create the jupyterhub directory
   file: path=/srv/jupyterhub state=directory
   sudo: yes
