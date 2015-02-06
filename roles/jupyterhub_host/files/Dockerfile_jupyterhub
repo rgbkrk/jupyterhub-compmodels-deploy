@@ -15,12 +15,10 @@ RUN mkdir /srv/oauthenticator
 ENV OAUTHENTICATOR_DIR /srv/oauthenticator
 RUN chmod 700 /srv/oauthenticator
 
-# install docker_oauth
-ADD https://raw.githubusercontent.com/jhamrick/docker-oauthenticator/master/docker_oauth.py /srv/oauthenticator/docker_oauth.py
-
-# add the userlist
+# add the userlist, spawner, and authenticator
 ADD userlist /srv/oauthenticator/userlist
 ADD swarmspawner.py /srv/oauthenticator/swarmspawner.py
+ADD docker_oauth.py /srv/oauthenticator/docker_oauth.py
 
 # set working directory to the jupyterhub directory
 WORKDIR /srv/jupyterhub

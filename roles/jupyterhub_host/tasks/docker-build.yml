@@ -33,6 +33,12 @@
   tags:
     - docker-rebuild
 
+- name: add docker_oauth.py
+  copy: src=docker_oauth.py dest=/srv/jupyterhub/docker_oauth.py
+  sudo: yes
+  tags:
+    - docker-rebuild
+
 - name: build compmodels/jupyterhub image
   docker_image:
     path: /srv/jupyterhub

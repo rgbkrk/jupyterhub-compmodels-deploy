@@ -56,7 +56,7 @@ Logs for NFS aren't in a separate log file; they can be found just in `/var/log/
 
 The JupyterHub setup itself is actually pretty straightforward.
 JupyterHub runs in a docker container from the image `compmodels/jupyterhub`, which is built from `jupyter/jupyterhub`.
-The differences are that our version of JupyterHub uses a special blend of GitHub authentication with local system users (called [docker-oathenticator](https://github.com/jhamrick/docker-oauthenticator)) and spawns user servers inside docker containers on the node servers using a spawner based on the [system user docker spawner](https://github.com/jupyter/dockerspawner).
+The differences are that our version of JupyterHub uses a special blend of GitHub authentication with local system users and spawns user servers inside docker containers on the node servers using a spawner based on the [system user docker spawner](https://github.com/jupyter/dockerspawner).
 What this basically means is:
 
 1. Users are created on the hub server with a username that needs to be the same as their GitHub username.
