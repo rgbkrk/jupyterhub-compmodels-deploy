@@ -1,4 +1,11 @@
 ---
+- name: stop duplicity backup
+  cron:
+    name: duplicity backup
+    state: absent
+  tags:
+    - backup
+
 - name: install packages with apt
   apt: update_cache=yes cache_valid_time=600 name=python-netifaces,duplicity state=latest
   sudo: yes
@@ -43,3 +50,4 @@
     job: /srv/backup/duplicity.sh
   tags:
     - backup
+  when: not test

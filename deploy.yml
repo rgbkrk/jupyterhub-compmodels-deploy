@@ -1,7 +1,7 @@
 ---
 - hosts: proxy
   vars_files:
-  - ['secrets.yml', 'secrets.vault.yml']
+  - 'secrets.vault.yml'
   - ['vars.local.yml', 'vars.yml']
   roles:
   - common
@@ -12,7 +12,7 @@
   - jupyterhub_host
   - jupyterhub_nodes
   vars_files:
-  - ['secrets.yml', 'secrets.vault.yml']
+  - 'secrets.vault.yml'
   - ['vars.local.yml', 'vars.yml']
   roles:
   - common
@@ -21,34 +21,23 @@
 - hosts:
   - jupyterhub_host
   vars_files:
-  - ['secrets.yml', 'secrets.vault.yml']
+  - 'secrets.vault.yml'
   - ['vars.local.yml', 'vars.yml']
   roles:
   - nfs-server
 
 - hosts: jupyterhub_nodes
   vars_files:
-  - ['secrets.yml', 'secrets.vault.yml']
+  - 'secrets.vault.yml'
   - ['vars.local.yml', 'vars.yml']
   roles:
   - nfs
   - jupyterhub_node
 
-- hosts: 127.0.0.1
-  connection: local
-  vars_files:
-    - ['vars.local.yml', 'vars.yml']
-
-  tasks:
-    - name: assemble user list
-      script: ./script/assemble_users "{{ survey_path }}"
-      tags:
-        - docker-rebuild
-
 - hosts: jupyterhub_host
   vars_files:
-  - ['secrets.yml', 'secrets.vault.yml']
-  - ['users.yml', 'users.vault.yml']
+  - 'secrets.vault.yml'
+  - 'users.vault.yml'
   - ['vars.local.yml', 'vars.yml']
   roles:
   - jupyterhub_host

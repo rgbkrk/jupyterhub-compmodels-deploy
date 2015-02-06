@@ -1,12 +1,4 @@
 ---
-- name: pull jupyterhub service images
-  command: docker pull {{ item }}
-  with_items:
-  - jupyter/systemuser
-  sudo: yes
-  tags:
-    - docker-rebuild
-
 - name: create the systemuser directory
   file: path=/srv/systemuser state=directory
   sudo: yes

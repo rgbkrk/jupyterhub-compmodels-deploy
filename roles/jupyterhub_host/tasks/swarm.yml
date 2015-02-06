@@ -59,7 +59,7 @@
     - swarm
 
 - name: start swarm manager
-  command: daemon -n swarm -o /var/log/swarm.log -- swarm --debug manage --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem --discovery file:///srv/cluster -H=127.0.0.1:2735
+  command: daemon -n swarm -o /var/log/swarm.log -- swarm --debug manage --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem -H=127.0.0.1:2735 file:///srv/cluster
   sudo: yes
   tags:
     - swarm

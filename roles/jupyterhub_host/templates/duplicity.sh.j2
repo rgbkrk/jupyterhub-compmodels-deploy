@@ -1,7 +1,7 @@
 #!/bin/bash
 gpg_key={{ gpg_key }}
 src="/var/lib/docker/export/home"
-dest="cf+http://compmodels"
+dest="cf+http://{{ backup_container }}"
 
 # Rackspace
 export CLOUDFILES_USERNAME="{{ rackspace_username }}"
@@ -15,4 +15,5 @@ duplicity --verbosity notice \
         --num-retries 3 \
         --asynchronous-upload \
         --volsize 10 \
+        --log-file /srv/backup/duplicity.log \
          "${src}" "${dest}"
