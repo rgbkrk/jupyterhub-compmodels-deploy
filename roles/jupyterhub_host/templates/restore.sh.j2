@@ -1,6 +1,6 @@
 #!/bin/bash
 gpg_key={{ gpg_key }}
-dest="cf+http://compmodels"
+dest="cf+http://{{ backup_container }}"
 
 # Rackspace
 export CLOUDFILES_USERNAME="{{ rackspace_username }}"
