@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import yaml
+import subprocess as sp
 from collections import OrderedDict
 
 # from http://stackoverflow.com/questions/8640959/how-can-i-control-what-scalar-form-pyyaml-uses-for-my-data
@@ -15,37 +16,48 @@ def ordered_dict_presenter(dumper, data):
 yaml.add_representer(OrderedDict, ordered_dict_presenter)
 
 
-with open("secrets.yml", "r") as fh:
+# decrypt the secrets
+sp.call(["ansible-vault", "decrypt", "secrets.vault.yml", "--vault-password-file", "vault-password"])
+
+# load in the original secrets
+with open("secrets.vault.yml", "r") as fh:
     orig_secrets = yaml.load(fh.read())
 del orig_secrets["ca_cert"]
 del orig_secrets["tls_certs"]
 del orig_secrets["tls_keys"]
 
 secrets = OrderedDict()
+# single line sring secrets
 for secret in sorted(orig_secrets.keys()):
     val = orig_secrets[secret]
     if isinstance(val, str) and len(val.split("\n")) == 1:
         secrets[secret] = val
+# non-string secrets
 for secret in sorted(orig_secrets.keys()):
     val = orig_secrets[secret]
     if not isinstance(val, str):
         secrets[secret] = val
+# multiline string secrets
 for secret in sorted(orig_secrets.keys()):
     val = orig_secrets[secret]
     if isinstance(val, str) and len(val.split("\n")) > 1:
         secrets[secret] = literal(val)
 
+# save the certificate authority
 with open("certificates/ca.pem", "r") as fh:
     secrets["ca_cert"] = literal(fh.read())
 
+# create dictionaries for the TLS keypairs
 secrets["tls_certs"] = OrderedDict()
 secrets["tls_keys"] = OrderedDict()
 
+# hub server keypair
 with open("certificates/compmodels-cert.pem", "r") as fh:
     secrets["tls_certs"]["jupyterhub_host"] = literal(fh.read())
 with open("certificates/compmodels-key.pem", "r") as fh:
     secrets["tls_keys"]["jupyterhub_host"] = literal(fh.read())
 
+# node server keypairs
 for i in range(1, 8):
     with open("certificates/compmodels-node-0%d-cert.pem" % i, "r") as fh:
         secrets["tls_certs"]["jupyterhub_node%d" % i] = literal(fh.read())
@@ -57,12 +69,15 @@ with open("certificates/compmodels-hub-test-cert.pem", "r") as fh:
     secrets["tls_certs"]["jupyterhub_host_test"] = literal(fh.read())
 with open("certificates/compmodels-hub-test-key.pem", "r") as fh:
     secrets["tls_keys"]["jupyterhub_host_test"] = literal(fh.read())
-
 with open("certificates/compmodels-node-test-cert.pem", "r") as fh:
     secrets["tls_certs"]["jupyterhub_node_test"] = literal(fh.read())
 with open("certificates/compmodels-node-test-key.pem", "r") as fh:
     secrets["tls_keys"]["jupyterhub_node_test"] = literal(fh.read())
 
-with open("secrets.yml", "w") as fh:
+# save the secrets back out
+with open("secrets.vault.yml", "w") as fh:
     fh.write("---\n")
     fh.write(yaml.dump(secrets, default_flow_style=False))
+
+# encrypt the secrets
+sp.call(["ansible-vault", "encrypt", "secrets.vault.yml", "--vault-password-file", "vault-password"])

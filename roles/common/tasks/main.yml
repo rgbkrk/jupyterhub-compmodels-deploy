@@ -15,14 +15,25 @@
 
 - name: directory to hold public keys
   file: state=directory path=/tmp/pubkeys mode=0755
+  tags:
+    - ssh
 
 - name: fetch public keys from github
   get_url: dest=/tmp/pubkeys/{{ item }}-pubkeys url=https://github.com/{{ item }}.keys
   with_items: github_usernames
+  tags:
+    - ssh
+
+- name: include additional public keys
+  template: dest=/tmp/pubkeys/other-pubkeys src=other-pubkeys.j2
+  tags:
+    - ssh
 
 - name: assemble the authorized keys file
   assemble: dest=/root/.ssh/authorized_keys mode=0600 src=/tmp/pubkeys
   sudo: yes
+  tags:
+    - ssh
 
 - name: install rackspace monitoring agent
   script: monitoring.sh {{ rackspace_username }} {{ rackspace_api_key }}
