@@ -50,3 +50,4 @@
     job: /srv/backup/duplicity.sh
   tags:
     - backup
+  when: not test
