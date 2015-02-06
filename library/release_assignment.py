@@ -46,8 +46,8 @@ def main():
     module = AnsibleModule(
         argument_spec={
             'src': dict(required=True),
-            'skeldir': dict(required=True),
             'users': dict(required=True, type='list'),
+            'skeldir': dict(default=''),
             'overwrite': dict(default=False, type='bool')
         }
     )
@@ -65,9 +65,10 @@ def main():
     tf.close()
 
     # Copy to the skeleton directory
-    if skeldir == "/":
-        module.fail_json(msg="Skeleton directory is /, danger!")
-    extract_to(module, src, skeldir, prefix, "root", overwrite=True)
+    if skeldir != "":
+        if skeldir == "/":
+            module.fail_json(msg="Skeleton directory is /, danger!")
+        extract_to(module, src, skeldir, prefix, "root", overwrite=True)
 
     changed = False
     changed_users = []
