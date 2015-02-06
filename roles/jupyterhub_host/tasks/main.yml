@@ -7,9 +7,6 @@
 - include: accounts.yml
 - include: swarm.yml
 
-- name: create jupyterhub.sqlite
-  file: path=/srv/jupyterhub/jupyterhub.sqlite state=touch mode=0600
-
 - name: launch jupyterhub
   docker:
     state: running
@@ -30,3 +27,15 @@
         - "{{ docker_tls_path }}:{{ docker_tls_path }}"
   tags:
     - docker-rebuild
+
+- name: get a jupyterhub api token
+  command: docker exec jupyterhub jupyterhub token -f /srv/jupyterhub/jupyterhub_config.py {{ instructors[0] }}
+  register: jpy_api_token
+  sudo: yes
+  tags:
+    - stats
+    - cull
+    - docker-rebuild
+
+- include: stats.yml
+- include: cull.yml

@@ -1,0 +1,48 @@
+---
+- name: stop and remove cull container
+  docker:
+    state: absent
+    image: compmodels/cull
+    name: cull
+  sudo: yes
+  tags:
+    - cull
+    - docker-rebuild
+
+- name: create the /srv/cull directory
+  file: path=/srv/cull state=directory
+  sudo: yes
+  tags:
+    - cull
+    - docker-rebuild
+
+- name: copy the Dockerfile to /srv/cull
+  copy: src=Dockerfile_cull dest=/srv/cull/Dockerfile
+  sudo: yes
+  tags:
+    - cull
+    - docker-rebuild
+
+- name: build compmodels/cull image
+  docker_image:
+    path: /srv/cull
+    name: compmodels/cull
+    state: build
+  sudo: yes
+  tags:
+    - cull
+    - docker-rebuild
+
+- name: launch cull
+  docker:
+    state: running
+    image: compmodels/cull
+    detach: true
+    name: cull
+    net: host
+    env:
+      JPY_API_TOKEN: "{{ jpy_api_token.stdout }}"
+  sudo: yes
+  tags:
+    - cull
+    - docker-rebuild
