@@ -7,14 +7,22 @@ import sys
 import subprocess as sp
 from collections import OrderedDict
 
-with open("users.yml", "r") as fh:
+# decrypt the users
+sp.call(["ansible-vault", "decrypt", "users.vault.yml", "--vault-password-file", "vault-password"])
+
+# read in the instructors
+with open("users.vault.yml", "r") as fh:
     instructors = yaml.load(fh.read())["instructors"]
 
+# get the students from the server
 students = sp.check_output(["ssh", "compmodels", "ls", "/home"])
 students = sorted(set(students.strip().split("\n")) - set(instructors))
 
+# write out the new file
 users = dict(instructors=instructors, students=students)
-
-with open("users.yml", "w") as fh:
+with open("users.vault.yml", "w") as fh:
     fh.write("---\n")
     fh.write(yaml.dump(users, default_flow_style=False))
+
+# encrypt the users
+sp.call(["ansible-vault", "encrypt", "users.vault.yml", "--vault-password-file", "vault-password"])
