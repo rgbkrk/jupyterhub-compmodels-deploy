@@ -1,6 +1,9 @@
 ---
 # Override these values by copying to vars.local.yml.
 
+# Are we testing?
+test: no
+
 # GitHub users to grab public keys from
 github_usernames:
 - jhamrick
@@ -10,8 +13,10 @@ github_usernames:
 # Path to assignments
 assignment_path: /path/to/your/assignments
 
-# IP address of the NFS server
-nfsserver: <ip_address>
+# Ansible hostname of the NFS server, e.g. `jupyterhub_host`. If you want this
+# to be different for testing, you can wrap it in a jinja if/else statement,
+# e.g. something like:
+nfsserver: {% if test %}jupyterhub_host_test{% else %}jupyterhub_host{% endif %}
 # Path to the NFS volume on the host
 nfspath: /path/to/volume
 # Path to mount NFS on the clients

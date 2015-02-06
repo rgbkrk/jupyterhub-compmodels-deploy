@@ -1,6 +1,9 @@
 [jupyterhub_host]
 jupyterhub_host ansible_ssh_user=root ansible_ssh_host=<public IP>
 
+# if you want to have a test host
+#jupyterhub_host_test ansible_ssh_user=root ansible_ssh_host=<public IP>
+
 [jupyterhub_host:vars]
 docker_image=jupyter/jupyterhub
 
@@ -12,6 +15,9 @@ jupyterhub_node4 ansible_ssh_user=root ansible_ssh_host=<public IP> fqdn=<hostna
 jupyterhub_node5 ansible_ssh_user=root ansible_ssh_host=<public IP> fqdn=<hostname>
 jupyterhub_node6 ansible_ssh_user=root ansible_ssh_host=<public IP> fqdn=<hostname>
 jupyterhub_node7 ansible_ssh_user=root ansible_ssh_host=<public IP> fqdn=<hostname>
+
+# if you want to have a test node
+#jupyterhub_node_test ansible_ssh_user=root ansible_ssh_host=<public IP> fqdn=<hostname>
 
 [jupyterhub_nodes:vars]
 docker_image=jupyter/systemuser
