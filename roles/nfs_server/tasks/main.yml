@@ -81,3 +81,5 @@
   sudo: yes
   tags:
     - nfs
+
+- include: backup.yml

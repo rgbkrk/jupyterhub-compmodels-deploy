@@ -24,7 +24,7 @@
   - 'secrets.vault.yml'
   - ['vars.local.yml', 'vars.yml']
   roles:
-  - nfs-server
+  - nfs_server
 
 - hosts: jupyterhub_nodes
   vars_files:
