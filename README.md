@@ -86,19 +86,18 @@ Swarm itself also runs in a docker container, so you can get the logs with `dock
 Each docker container started through swarm is allocated 1GB of memory (currently there is no limit on CPU, but if a problem arises, we can institute one as well).
 Each node server has 32GB of memory, meaning that we can run about 31*7=217 containers at once.
 We actually have slightly more users than that, so we've set up a script that runs every hour and shuts down user containers if they haven't been accessed in 24 hours.
-The script can be run as follows:
-
-```
-cd /root/cull
-export JPY_API_TOKEN=`cat ../stats/jpy_api_token`
-python3 ./cull_idle_servers.py --timeout=86400 --cull_every=3600 --log_file_prefix=cull.log
-```
-
-You can background the process by pressing `Ctrl-z` and then running the command `bg`. Logs will go into the `cull.log` file.
+The script runs in a docker container called `cull`, so logs can be accessed via `docker logs cull`.
 
 Note: there is currently a bug in JupyterHub that causes the culling script to encounter a bunch of timeout errors because each server takes several seconds to shutdown.
 This has been fixed in JupyterHub, but we haven't updated to the new version yet because it will cause a service interruption.
 In the meantime, the errors are mostly harmless; the user servers still end up getting shutdown.
+
+### Activity statistics
+
+There is another service that runs and periodically checks which users have been active recently.
+It then saves that information into a sqlite database, which can subsequently be downloaded and analyzed.
+This script runs in a docker container called `stats`, so logs can be accessed via `docker logs stats`.
+The sqlite database is saved to `/srv/stats/db/activity.sqlite`.
 
 ## Node servers
 
