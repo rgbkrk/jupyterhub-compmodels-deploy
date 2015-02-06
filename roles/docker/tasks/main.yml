@@ -99,13 +99,11 @@
   shell: docker stop $(docker ps -a -q) || true
   tags:
     - docker-rebuild
-    - swarm
 
 - name: remove docker containers
   shell: docker rm -v $(docker ps -a -q) || true
   tags:
     - docker-rebuild
-    - swarm
 
 - name: turn off docker cleanup cronjob
   cron: name="docker cleanup" state=absent

@@ -1,71 +1,56 @@
 ---
-- name: install golang
-  apt: update_cache=yes cache_valid_time=600 name=golang state=latest
+- name: stop and remove swarm container
+  docker:
+    state: absent
+    image: compmodels/swarm
+    name: swarm
   sudo: yes
   tags:
     - swarm
+    - docker-rebuild
 
-- name: uninstall swarm
-  file: path=/srv/gocode state=absent
+- name: create the /srv/swarm directory
+  file: path=/srv/swarm state=directory
   sudo: yes
   tags:
     - swarm
-
-- name: create the /srv/gocode directory
-  file: path=/srv/gocode state=directory
-  sudo: yes
-  tags:
-    - swarm
-
-- name: install swarm
-  shell: GOPATH=/srv/gocode go get -u github.com/jhamrick/swarm
-  sudo: yes
-  tags:
-    - swarm
-
-- name: symlink swarm binary
-  file: src=/srv/gocode/bin/swarm dest=/usr/local/bin/swarm state=link
-  sudo: yes
-  tags:
-    - swarm
+    - docker-rebuild
 
 - name: create the cluster list
-  template: src=cluster.j2 dest=/srv/cluster
+  template: src=cluster.j2 dest=/srv/swarm/cluster
   sudo: yes
   tags:
     - swarm
+    - docker-rebuild
 
-- name: stop swarm manager
-  shell: "daemon -n swarm --running && daemon -n swarm --stop || echo ok"
+- name: copy the Dockerfile to /srv/swarm
+  template: src=Dockerfile_swarm.j2 dest=/srv/swarm/Dockerfile
   sudo: yes
   tags:
     - swarm
+    - docker-rebuild
 
-- name: wait for swarm manager to exit
-  wait_for: "path=/run/swarm.pid state=absent"
-  tags:
-    - swarm
-
-- name: ensure that daemon says swarm manager is not running
-  shell: "[ ! $(daemon -n swarm --running) ]"
+- name: build compmodels/swarm image
+  docker_image:
+    path: /srv/swarm
+    name: compmodels/swarm
+    state: build
   sudo: yes
   tags:
     - swarm
+    - docker-rebuild
 
-- name: remove old swarm logs
-  file: path=/var/log/swarm.log state=absent
+- name: launch swarm
+  docker:
+    state: running
+    image: compmodels/swarm
+    detach: true
+    name: swarm
+    net: host
+    volumes:
+        - /root/.swarm:/root/.swarm
+        - "{{ docker_tls_path }}:{{ docker_tls_path }}"
   sudo: yes
   tags:
     - swarm
-
-- name: start swarm manager
-  command: daemon -n swarm -o /var/log/swarm.log -- swarm --debug manage --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem -H=127.0.0.1:2735 file:///srv/cluster
-  sudo: yes
-  tags:
-    - swarm
-
-- name: ensure swarm manager is running
-  shell: daemon -n swarm --running
-  sudo: yes
-  tags:
-    - swarm
+    - docker-rebuild
