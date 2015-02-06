@@ -8,4 +8,4 @@ ADD https://raw.githubusercontent.com/minrk/log_jupyterhub_activity/master/log_a
 
 RUN mkdir /srv/stats/db
 ENTRYPOINT ["python", "log_activity"]
-CMD ["--file", "db/activity.sqlite"]
+CMD ["--file=db/activity.sqlite"]

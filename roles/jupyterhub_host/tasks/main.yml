@@ -37,6 +37,8 @@
   sudo: yes
   tags:
     - stats
+    - cull
     - docker-rebuild
 
 - include: stats.yml
+- include: cull.yml
