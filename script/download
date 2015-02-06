@@ -9,4 +9,4 @@ if [ ! -e ${ROOT}//inventory ]; then
 fi
 
 VAULT_ARG="--vault-password-file ${ROOT}/vault-password"
-exec ansible-playbook ${ROOT}/download.yml -i ${ROOT}/inventory $@
+exec ansible-playbook ${ROOT}/download.yml -i ${ROOT}/inventory ${VAULT_ARG} $@
