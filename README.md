@@ -46,11 +46,13 @@ The hub server on its own only has about 28GB of disk space, so to supplement th
 The original copies of all files are located at `/var/lib/docker/export/home` (the directory `/var/lib/docker/export` is the root of the NFS host filesystem).
 They are additionally mounted at `/home` on the hub server, and that is the location from which they should *always* be accessed.
 
-There is a cron job that runs every hour to back up the files in `/home` using the script `/srv/backup/duplicity.sh`.
-The script runs [duplicity](http://duplicity.nongnu.org/), which is a backup service that performs a full backup every seven days and otherwise performs incremental backups.
+There is a cron job that runs every hour to back up the files in `/home` using the script `/srv/backup/backup.sh`.
+The script runs [duplicity](http://duplicity.nongnu.org/) once every hour, which is a backup service that performs a full backup every seven days and otherwise performs incremental backups.
 The files get encrypted and then backed up to a Rackspace Cloud Files container, from which they can also be restored, if necessary.
+In addition, another script (`/srv/backup/cleanup.sh`) gets run once a day, and will remove old backups. Only the most recent two full backups are kept.
 
-Logs for NFS aren't in a separate log file; they can be found just in `/var/log/syslog`.
+Logs for the duplicity service are in `/srv/backup/duplicity.log`.
+Logs for NFS don't have their own log file; they can be found just in `/var/log/syslog`.
 
 ### JupyterHub
 
@@ -66,6 +68,16 @@ What this basically means is:
 5. A user is created inside the docker container with the appropriate username and pid, so that they have access to the files in their home directory.
 
 You should be able to see the JupyterHub docker container with `docker ps`. To get the JupyterHub logs, you can run `docker logs --tail=10 jupyterhub`.
+
+### Restuser
+
+When a new user is added to JupyterHub, it ensures that the user exists on the system by communicating with a service called [restuser](https://github.com/minrk/restuser).
+This is just a simple REST API that can create new users on the system.
+This is necessary, because JupyterHub is running in a docker container, and so can't actually create users on the system directly.
+
+When users are created, their home directory is created on the NFS mount.
+The skeleton directory used to initialize their home directory can be found at `/srv/skeldir`.
+Logs for the restuser service can be found at `/var/log/restuser.log`.
 
 ### Swarm
 
@@ -87,10 +99,6 @@ Each docker container started through swarm is allocated 1GB of memory (currentl
 Each node server has 32GB of memory, meaning that we can run about 31*7=217 containers at once.
 We actually have slightly more users than that, so we've set up a script that runs every hour and shuts down user containers if they haven't been accessed in 24 hours.
 The script runs in a docker container called `cull`, so logs can be accessed via `docker logs cull`.
-
-Note: there is currently a bug in JupyterHub that causes the culling script to encounter a bunch of timeout errors because each server takes several seconds to shutdown.
-This has been fixed in JupyterHub, but we haven't updated to the new version yet because it will cause a service interruption.
-In the meantime, the errors are mostly harmless; the user servers still end up getting shutdown.
 
 ### Activity statistics
 
@@ -140,6 +148,10 @@ To deploy this setup:
 
 Note that this will stop JupyterHub if it is currently running -- so don't run
 this when people might be using the hub!
+
+If you need to run a particular subset of the deploy operations, you can pass a `-t` flag to specify a "tag".
+For example, to do all tasks relating to the statistics service, you would run `./script deploy -t stats`.
+These tags are defined in the tasks themselves, for example if you look at `roles/jupyterhub_host/tasks/stats.yml` you'll see that the tasks all have a "stats" tag as well as a "rebuild-tag".
 
 ## Releasing assignments
 
