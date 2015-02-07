@@ -6,6 +6,13 @@
   tags:
     - backup
 
+- name: stop duplicity cleanup
+  cron:
+    name: duplicity cleanup
+    state: absent
+  tags:
+    - backup
+
 - name: install packages with apt
   apt: update_cache=yes cache_valid_time=600 name=python-netifaces,duplicity state=latest
   sudo: yes
@@ -37,13 +44,19 @@
     - backup
 
 - name: upload backup script
-  template: src=backup.sh.j2 dest=/srv/backup/backup.sh mode=700
+  copy: src=backup.sh dest=/srv/backup/backup.sh mode=700
   sudo: yes
   tags:
     - backup
 
 - name: upload restore script
-  template: src=restore.sh.j2 dest=/srv/backup/restore.sh mode=700
+  copy: src=restore.sh dest=/srv/backup/restore.sh mode=700
+  sudo: yes
+  tags:
+    - backup
+
+- name: upload cleanup script
+  copy: src=cleanup.sh dest=/srv/backup/cleanup.sh mode=700
   sudo: yes
   tags:
     - backup
@@ -54,6 +67,16 @@
     minute: 5
     user: root
     job: /srv/backup/backup.sh
+  tags:
+    - backup
+  when: not test
+
+- name: schedule duplicity cleanup
+  cron:
+    name: duplicity cleanup
+    hour: 5
+    user: root
+    job: /srv/backup/cleanup.sh
   tags:
     - backup
   when: not test
