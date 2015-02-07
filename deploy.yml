@@ -1,14 +1,6 @@
 ---
-- hosts: proxy
-  vars_files:
-  - 'secrets.vault.yml'
-  - ['vars.local.yml', 'vars.yml']
-  roles:
-  - common
-  - docker
-  - proxy
-
 - hosts:
+  - proxy
   - jupyterhub_host
   - jupyterhub_nodes
   vars_files:
@@ -17,6 +9,13 @@
   roles:
   - common
   - docker
+
+- hosts: proxy
+  vars_files:
+  - 'secrets.vault.yml'
+  - ['vars.local.yml', 'vars.yml']
+  roles:
+  - proxy
 
 - hosts:
   - jupyterhub_host
