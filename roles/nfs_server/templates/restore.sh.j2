@@ -1,11 +1,5 @@
 #!/bin/bash
-gpg_key={{ gpg_key }}
-dest="cf+http://{{ backup_container }}"
 
-# Rackspace
-export CLOUDFILES_USERNAME="{{ rackspace_username }}"
-export CLOUDFILES_APIKEY="{{ rackspace_api_key }}"
-export PASSPHRASE='{{ gpg_pass }}'
-
+source ./duplicity.sh
 
 duplicity restore --encrypt-key "$gpg_key" "${dest}" "$1"

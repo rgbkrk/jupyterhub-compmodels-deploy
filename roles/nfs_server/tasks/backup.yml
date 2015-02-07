@@ -30,8 +30,14 @@
   tags:
     - backup
 
-- name: upload duplicity script
-  template: src=duplicity.sh.j2 dest=/srv/backup/duplicity.sh mode=700
+- name: upload duplicity base script
+  template: src=duplicity.sh.j2 dest=/srv/backup/duplicity.sh mode=600
+  sudo: yes
+  tags:
+    - backup
+
+- name: upload backup script
+  template: src=backup.sh.j2 dest=/srv/backup/backup.sh mode=700
   sudo: yes
   tags:
     - backup
@@ -47,7 +53,7 @@
     name: duplicity backup
     minute: 5
     user: root
-    job: /srv/backup/duplicity.sh
+    job: /srv/backup/backup.sh
   tags:
     - backup
   when: not test
