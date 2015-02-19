@@ -19,7 +19,7 @@
     - ssh
 
 - name: fetch public keys from github
-  get_url: dest=/tmp/pubkeys/{{ item }}-pubkeys url=https://github.com/{{ item }}.keys
+  get_url: dest=/tmp/pubkeys/{{ item }}-pubkeys url=https://github.com/{{ item }}.keys force=yes
   with_items: github_usernames
   tags:
     - ssh
