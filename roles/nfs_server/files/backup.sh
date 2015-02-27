@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./duplicity.sh
+source /srv/backup/duplicity.sh
 
 duplicity --verbosity notice \
         --encrypt-key "$gpg_key" \
