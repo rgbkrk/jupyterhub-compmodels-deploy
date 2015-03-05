@@ -54,20 +54,25 @@ def main():
 
     src = module.params["src"]
     users = module.params["users"]
-    skeldir = os.path.abspath(module.params["skeldir"])
+    skeldir = module.params["skeldir"]
     overwrite = module.params["overwrite"]
 
     # Open the tarfile, figure out the prefix
     tf = tarfile.open(src, 'r:gz')
     prefix = os.path.commonprefix(tf.getnames()).rstrip("/")
+    if prefix != '':
+        member = tf.getmember(prefix)
+        if not member.isdir():
+            prefix = os.path.dirname(prefix)
+    tf.close()
     if prefix == '':
         module.fail_json(msg="Archive has no common prefix")
-    tf.close()
 
     # Copy to the skeleton directory
     if skeldir != "":
-        if skeldir == "/":
-            module.fail_json(msg="Skeleton directory is /, danger!")
+        skeldir = os.path.abspath(skeldir)
+        if skeldir in ("/", "/root", "/home"):
+            module.fail_json(msg="Skeleton directory is {}, danger!".format(skeldir))
         extract_to(module, src, skeldir, prefix, "root", overwrite=True)
 
     changed = False
