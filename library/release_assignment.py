@@ -61,9 +61,13 @@ def main():
     tf = tarfile.open(src, 'r:gz')
     prefix = os.path.commonprefix(tf.getnames()).rstrip("/")
     if prefix != '':
-        member = tf.getmember(prefix)
-        if not member.isdir():
-            prefix = os.path.dirname(prefix)
+        try:
+            member = tf.getmember(prefix)
+        except KeyError:
+            pass
+        else:
+            if not member.isdir():
+                prefix = os.path.dirname(prefix)
     tf.close()
     if prefix == '':
         module.fail_json(msg="Archive has no common prefix")
