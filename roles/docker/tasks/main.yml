@@ -92,8 +92,10 @@
   sudo: yes
 
 - name: docker-py
-  pip: name=docker-py state=latest
+  pip: name=docker-py state=present version=0.7.2
   sudo: yes
+  tags:
+    - docker-rebuild
 
 - name: stop running docker containers
   shell: docker stop $(docker ps -a -q) || true
