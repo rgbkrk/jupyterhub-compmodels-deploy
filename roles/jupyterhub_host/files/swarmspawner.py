@@ -19,10 +19,10 @@ class SwarmSpawner(SystemUserSpawner):
     def start(self, image=None, extra_create_kwargs=None):
         # look up mapping of node names to ip addresses
         info = yield self.docker('info')
-        node_info = info['DriverStatus']
-        num_nodes = int(node_info[0][1])
+        num_nodes = int(info['DriverStatus'][0][1])
+        node_info = info['DriverStatus'][1::4]
         self.node_info = {}
-        for i in range(1, num_nodes + 1):
+        for i in range(num_nodes):
             node, ip_port = node_info[i]
             self.node_info[node] = ip_port.split(":")[0]
         self.log.debug("Swarm nodes are: {}".format(self.node_info))
