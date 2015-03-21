@@ -11,7 +11,8 @@ def main():
             'src': dict(required=True),
             'dest': dict(required=True),
             'name': dict(required=True),
-            'overwrite': dict(default=False, type='bool')
+            'overwrite': dict(default=False, type='bool'),
+            'users': dict(default=[], type='list')
         }
     )
 
@@ -19,6 +20,7 @@ def main():
     dest = module.params["dest"]
     name = module.params["name"]
     overwrite = module.params["overwrite"]
+    users = module.params["users"]
 
     # Check that the source is a directory
     if not os.path.isdir(src):
@@ -43,9 +45,13 @@ def main():
     fd, tmp_dest = tempfile.mkstemp()
     os.close(fd)
 
+    # Make the list of users
+    if users == []:
+        users = os.listdir(src)
+
     # Create the tarball
     tf = tarfile.open(tmp_dest, 'w:gz')
-    for user in os.listdir(src):
+    for user in users:
         userpath = os.path.join(src, user)
         for (dirpath, dirnames, filenames) in os.walk(userpath):
             for filename in filenames:
