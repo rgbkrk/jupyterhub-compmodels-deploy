@@ -1,0 +1,6 @@
+---
+docker_images:
+  - jupyter/jupyterhub
+
+docker_server_tls: no
+docker_client_tls: yes

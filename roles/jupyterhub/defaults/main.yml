@@ -1,0 +1,33 @@
+---
+# This is the auth token for JupyterHub. You can create it with:
+#     openssl rand -hex 16
+# Note that this should never be stored in plaintext; you should probably
+# override it in an encrypted vault file.
+configproxy_auth_token: ''
+
+# This is the cookie secret for JupyterHub. You can create it with:
+#     openssl rand -hex 2048
+# Note that this should never be stored in plaintext; you should probably
+# override it in an encrypted vault file.
+cookie_secret: ''
+
+# Get these from the GitHub OAuth application. Note that these should never
+# be stored in plaintext, they should be overwritten in an encrypted vault file.
+github_client_id: ''
+github_client_secret: ''
+oauth_callback_url: ''
+
+# This is the path to where the docker TLS certificates are stored -- this is
+# necessary for the SwarmSpawner to actually be able to communicate with swarm
+docker_tls_path: /root/.docker
+
+# These are the instructors that will have JupyterHub admin access. This list
+# should probably be overwritten in an encrypted vault file.
+instructors: []
+
+# These are the students that have access to JupyterHub, but not admin access.
+# This list should probably be overwritten in an encrypted vault file.
+students: []
+
+# Needed to make sure the API version matches with docker-py
+docker_api_version: 1.16

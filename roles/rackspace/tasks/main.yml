@@ -1,0 +1,9 @@
+---
+- fail: msg="rackspace_username is not defined"
+  when: rackspace_username == ''
+- fail: msg="rackspace_api_key is not defined"
+  when: rackspace_api_key == ''
+
+- name: install rackspace monitoring agent
+  script: monitoring.sh {{ rackspace_username }} {{ rackspace_api_key }}
+  sudo: yes

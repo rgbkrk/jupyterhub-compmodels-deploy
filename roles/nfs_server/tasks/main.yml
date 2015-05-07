@@ -1,4 +1,11 @@
 ---
+- fail: msg="nfspath is not defined"
+  when: nfspath == ''
+- fail: msg="nfsmount is not defined"
+  when: nfsmount == ''
+- fail: msg="nfsdomain is not defined"
+  when: nfsdomain == ''
+
 - name: install nfs packages
   apt: update_cache=yes cache_valid_time=600 name=nfs-kernel-server,nfs-common state=latest
   sudo: yes
@@ -81,5 +88,3 @@
   sudo: yes
   tags:
     - nfs
-
-- include: backup.yml

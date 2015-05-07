@@ -1,0 +1,71 @@
+---
+- fail: msg="backup_source_directory is not defined"
+  when: backup_source_directory == ''
+- fail: msg="backup_container is not defined"
+  when: backup_container == ''
+- fail: msg="gpg_key is not defined"
+  when: gpg_key == ''
+- fail: msg="gpg_pass is not defined"
+  when: gpg_pass == ''
+- fail: msg="rackspace_username is not defined"
+  when: rackspace_username == ''
+- fail: msg="rackspace_api_key is not defined"
+  when: rackspace_api_key == ''
+
+- name: stop duplicity backup
+  cron:
+    name: duplicity backup
+    state: absent
+
+- name: stop duplicity cleanup
+  cron:
+    name: duplicity cleanup
+    state: absent
+
+- name: install packages with apt
+  apt: update_cache=yes cache_valid_time=600 name=python-netifaces,duplicity state=latest
+  sudo: yes
+
+- name: install pyrax
+  pip: name=pyrax state=latest
+  sudo: yes
+
+- name: install keystoneclient
+  pip: name=python-keystoneclient state=latest
+  sudo: yes
+
+- name: create the directory where the backup scripts will go
+  file: path={{ backup_script_directory }} state=directory
+  sudo: yes
+
+- name: upload duplicity base script
+  template: src=duplicity.sh.j2 dest={{ backup_script_directory }}/duplicity.sh mode=600
+  sudo: yes
+
+- name: upload backup script
+  copy: src=backup.sh dest={{ backup_script_directory }}/backup.sh mode=700
+  sudo: yes
+
+- name: upload restore script
+  copy: src=restore.sh dest={{ backup_script_directory }}/restore.sh mode=700
+  sudo: yes
+
+- name: upload cleanup script
+  copy: src=cleanup.sh dest={{ backup_script_directory }}/cleanup.sh mode=700
+  sudo: yes
+
+- name: schedule duplicity backup
+  cron:
+    name: duplicity backup
+    minute: 5
+    user: root
+    job: '{{ backup_script_directory }}/backup.sh'
+  when: not test
+
+- name: schedule duplicity cleanup
+  cron:
+    name: duplicity cleanup
+    hour: 5
+    user: root
+    job: '{{ backup_script_directory }}/cleanup.sh'
+  when: not test

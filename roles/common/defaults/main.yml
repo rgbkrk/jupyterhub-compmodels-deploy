@@ -1,0 +1,9 @@
+---
+# You can give admins SSH access either by specifying their GitHub usernames
+# here, which will download all their keys from GitHub (i.e., from
+# https://github.com/username.keys).
+github_usernames: []
+
+# If you don't want to give all of those keys SSH access, you can specify
+# individual keys here:
+other_ssh_keys: []

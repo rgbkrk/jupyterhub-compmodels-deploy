@@ -1,0 +1,5 @@
+---
+# Never actually include your Rackspace username and API ey here -- they should
+# be overwritten in an encrypted vault file.
+rackspace_username: ''
+rackspace_api_key: ''

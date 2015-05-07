@@ -1,0 +1,9 @@
+---
+# Inventory file hostname of the NFS server
+nfsserver: ''
+# Path to mount NFS on the clients
+nfsmount: ''
+# Domain for idmapd
+nfsdomain: ''
+# Options to mount NFS with
+nfsoptions: rw

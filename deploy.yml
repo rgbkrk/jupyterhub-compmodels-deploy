@@ -5,15 +5,16 @@
   - jupyterhub_nodes
   vars_files:
   - 'secrets.vault.yml'
-  - ['vars.local.yml', 'vars.yml']
+  - 'vars.yml'
   roles:
   - common
+  - rackspace
   - docker
 
 - hosts: proxy
   vars_files:
   - 'secrets.vault.yml'
-  - ['vars.local.yml', 'vars.yml']
+  - 'vars.yml'
   roles:
   - proxy
 
@@ -21,22 +22,27 @@
   - jupyterhub_host
   vars_files:
   - 'secrets.vault.yml'
-  - ['vars.local.yml', 'vars.yml']
+  - 'vars.yml'
   roles:
   - nfs_server
+  - backup
 
 - hosts: jupyterhub_nodes
   vars_files:
   - 'secrets.vault.yml'
-  - ['vars.local.yml', 'vars.yml']
+  - 'vars.yml'
   roles:
-  - nfs
-  - jupyterhub_node
+  - nfs_client
+  - singleuser
 
 - hosts: jupyterhub_host
   vars_files:
   - 'secrets.vault.yml'
   - 'users.vault.yml'
-  - ['vars.local.yml', 'vars.yml']
+  - 'vars.yml'
   roles:
-  - jupyterhub_host
+  - restuser
+  - swarm
+  - jupyterhub
+  - cull
+  - stats

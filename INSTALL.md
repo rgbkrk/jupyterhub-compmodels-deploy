@@ -35,12 +35,28 @@ You'll need to generate keypairs for the hub server and for each of the node ser
 
 ## Secrets
 
-Required variables in secrets.yml (or secrets.vault.yml):
+Copy the `secrets.vault.yml.example` file to `secrets.vault.yml` and edit it to include keys and passwords for your specific deployment. You should then encrypt it using Ansible vault:
 
-- ssl_key: the SSL key
-- ssl_cert: the SSL certificate
-- github_client_id (the client id as provided by the GitHub app)
-- github_client_secret (the client secret as provided by the GitHub app)
-- oauth_callback_url (the callback url, the same as specified in the GitHub app)
-- configproxy_auth_token (a smallish random string - `openssl rand -hex 16`)
-- cookie_secret (a large-ish random hex string - (`openssl rand -hex 2048`))
+```
+ansible-vault encrypt secrets.vault.yml
+```
+
+It may be helpful to put your Ansible vault password in a file called `vault-password`, so then you can do:
+
+```
+ansible-vault encrypt --vault-password-file vault-password secrets.vault.yml
+```
+
+You will also need to save host-specific variables (such as certificates) into the `host_vars` directory (one file per host in the inventory). There is a file there called `example` that will tell you what variables need to be defined in those files. One example of something that needs to be in these files are the certificates for the servers running Docker with TLS. If you generated certificates as suggested above, then you will have all your Docker certs in the `certificates` folder. You can copy these to the `host_vars` directory with the helper script `script/assemble_certs` -- you will just need to edit the `assemble_certs` script so that it uses the correct names for your certificates and hosts.
+
+## Users
+
+For the whitelist of users, you need to copy `users.vault.yml.example` to `users.vault.yml` and edit it to include your list of students and instructors. The instructors will have admin access to JupyterHub. Once you are done editing it, you should encrypt it using Ansible vault:
+
+```
+ansible-vault encrypt --vault-password-file vault-password users.vault.yml
+```
+
+## Other variables
+
+You'll need to set a few other variables. Copy `vars.yml.example` to `vars.yml` and edit it to include specifics for your deployment.

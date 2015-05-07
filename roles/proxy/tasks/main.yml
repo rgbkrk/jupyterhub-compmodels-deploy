@@ -20,9 +20,9 @@
 - name: SSL credentials
   template: src={{ item.from }} dest={{ item.to }} mode=0644
   with_items:
-  - from: tmpnb.org.key.j2
+  - from: ssl.key.j2
     to: "{{ ssl_key_path }}"
-  - from: tmpnb.org.crt.j2
+  - from: ssl.crt.j2
     to: "{{ ssl_cert_path }}"
   sudo: yes
   notify:
@@ -33,7 +33,7 @@
   sudo: yes
   notify:
   - reload nginx configuration
- 
+
 - name: launch nginx
   docker:
     image: nginx

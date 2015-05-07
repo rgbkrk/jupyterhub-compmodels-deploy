@@ -1,3 +1,0 @@
-{% for host in groups['jupyterhub_nodes'] %}
-{{ hostvars[host]['ansible_ssh_host'] }}:2376
-{% endfor %}

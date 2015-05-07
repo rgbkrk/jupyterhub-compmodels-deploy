@@ -1,0 +1,32 @@
+---
+# This is a list of docker images that should be pulled
+docker_images: []
+
+# This is where the TLS certificates and keys should be stored for Docker
+docker_tls_path: /root/.docker
+
+# Whether or not the Docker server should run on a public port with TLS
+docker_server_tls: no
+# If running on a public port with TLS, this is the port number
+docker_server_port: 2376
+
+# Whether or not the Docker client needs TLS (to communicate with a Docker
+# server running TLS)
+docker_client_tls: no
+
+# This is the certificate authority for the Docker certs. This should never
+# actually be saved in plain text, it should be overwritten in an encrypted
+# vault file.
+docker_ca_cert: ''
+
+# This should contain TLS certificates for each of the machines that use
+# Docker. Each key should correspond to the name of the host in the inventory
+# file. These should never actually be saved in plain text, they should be
+# overwritten in an encrypted vault file.
+docker_tls_cert: ''
+
+# This should contain TLS keys for each of the machines that use Docker, and
+# there should be one for each certificate in `tls_certs`. These should never
+# actually be saved in plain text, they should be overwritten in an encrypted
+# vault file.
+docker_tls_key: ''
