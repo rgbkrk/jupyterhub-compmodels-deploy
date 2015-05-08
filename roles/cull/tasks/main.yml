@@ -8,24 +8,19 @@
     state: absent
     image: compmodels/cull
     name: cull
-  sudo: yes
 
 - name: create the /srv/cull directory
   file: path=/srv/cull state=directory
-  sudo: yes
 
 - name: copy the Dockerfile to /srv/cull
   template: src=Dockerfile.j2 dest=/srv/cull/Dockerfile
-  sudo: yes
 
 - name: build compmodels/cull image
   shell: docker build -t compmodels/cull /srv/cull
-  sudo: yes
 
 - name: get a jupyterhub api token
   command: docker exec jupyterhub jupyterhub token -f /srv/jupyterhub/jupyterhub_config.py {{ jupyterhub_admin_user }}
   register: jpy_api_token
-  sudo: yes
 
 - name: launch cull
   docker:
@@ -37,4 +32,3 @@
     net: host
     env:
       JPY_API_TOKEN: "{{ jpy_api_token.stdout }}"
-  sudo: yes

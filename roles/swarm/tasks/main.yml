@@ -5,23 +5,18 @@
     state: absent
     image: compmodels/swarm
     name: swarm
-  sudo: yes
 
 - name: create the /srv/swarm directory
   file: path=/srv/swarm state=directory
-  sudo: yes
 
 - name: create the cluster list
   template: src=cluster.j2 dest=/srv/swarm/cluster
-  sudo: yes
 
 - name: copy the Dockerfile to /srv/swarm
   template: src=Dockerfile.j2 dest=/srv/swarm/Dockerfile
-  sudo: yes
 
 - name: build compmodels/swarm image
   shell: docker build -t compmodels/swarm /srv/swarm
-  sudo: yes
 
 - name: launch swarm
   docker:
@@ -34,4 +29,3 @@
     volumes:
         - /root/.swarm:/root/.swarm
         - "{{ docker_tls_path }}:{{ docker_tls_path }}"
-  sudo: yes

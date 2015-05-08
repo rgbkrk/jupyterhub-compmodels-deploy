@@ -4,7 +4,6 @@
 
 - name: sshd configuration
   copy: src=sshd_config dest=/etc/ssh/sshd_config mode=0644
-  sudo: yes
   notify:
   - restart sshd
 
@@ -20,4 +19,3 @@
 
 - name: assemble the authorized keys file
   assemble: dest=/root/.ssh/authorized_keys mode=0600 src=/tmp/pubkeys
-  sudo: yes

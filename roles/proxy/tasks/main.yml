@@ -29,7 +29,6 @@
   file: state=directory dest={{ item }} mode=0755
   with_items:
   - "{{ nginx_config_dir }}"
-  sudo: yes
 
 - name: SSL credentials
   template: src={{ item.from }} dest={{ item.to }} mode=0644
@@ -38,22 +37,18 @@
     to: "{{ ssl_key_path }}"
   - from: ssl.crt.j2
     to: "{{ ssl_cert_path }}"
-  sudo: yes
 
 - name: nginx configuration
   template: src=nginx.conf.j2 dest={{ nginx_config_dir }}/nginx.conf mode=0644
-  sudo: yes
 
 - name: copy the Dockerfile to the nginx configuration directory
   template: src=Dockerfile.j2 dest={{ nginx_config_dir }}/Dockerfile mode=0644
-  sudo: yes
 
 - name: build tmpnb nginx image
   docker_image:
     path: "{{ nginx_config_dir }}"
     name: compmodels/nginx
     state: build
-  sudo: yes
 
 - name: launch nginx
   docker:
