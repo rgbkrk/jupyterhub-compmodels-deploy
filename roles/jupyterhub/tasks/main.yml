@@ -27,60 +27,42 @@
 - name: create the jupyterhub_db directory
   file: path=/srv/jupyterhub_db state=directory
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: create jupyterhub.sqlite
   file: path=/srv/jupyterhub_db/jupyterhub.sqlite state=touch mode=0600
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: create the jupyterhub directory
   file: path=/srv/jupyterhub state=directory
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: copy the Dockerfile to the jupyterhub directory
   copy:
     src: Dockerfile
     dest: /srv/jupyterhub/Dockerfile
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: copy jupyterhub_config.py to the jupyterhub directory
   template:
     src: jupyterhub_config.py
     dest: /srv/jupyterhub/jupyterhub_config.py
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: create the userlist
   template: src=userlist.j2 dest=/srv/jupyterhub/userlist
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: add swarmspawner.py
   copy: src=swarmspawner.py dest=/srv/jupyterhub/swarmspawner.py
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: add docker_oauth.py
   copy: src=docker_oauth.py dest=/srv/jupyterhub/docker_oauth.py
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: build compmodels/jupyterhub image
   shell: docker build -t compmodels/jupyterhub /srv/jupyterhub
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: launch jupyterhub
   docker:
@@ -101,5 +83,3 @@
         - /var/run/restuser.sock:/restuser.sock
         - /srv/jupyterhub_db:/srv/jupyterhub_db
         - "{{ docker_tls_path }}:{{ docker_tls_path }}"
-  tags:
-    - docker-rebuild

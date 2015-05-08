@@ -9,20 +9,13 @@
 - name: create the systemuser directory
   file: path=/srv/systemuser state=directory
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: copy the Dockerfile to the systemuser directory
   copy:
     src: Dockerfile
     dest: /srv/systemuser/Dockerfile
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: build compmodels/systemuser image
   shell: docker build -t compmodels/systemuser /srv/systemuser
   sudo: yes
-  tags:
-    - docker-rebuild
-

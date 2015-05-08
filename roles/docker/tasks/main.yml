@@ -84,18 +84,12 @@
 - name: docker-py
   pip: name=docker-py state=present version=1.1.0
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: stop running docker containers
   shell: docker stop $(docker ps -a -q) || true
-  tags:
-    - docker-rebuild
 
 - name: remove docker containers
   shell: docker rm -v $(docker ps -a -q) || true
-  tags:
-    - docker-rebuild
 
 - name: turn off docker cleanup cronjob
   cron: name="docker cleanup" state=absent
@@ -104,8 +98,6 @@
   command: docker pull {{ item }}
   with_items: docker_images
   sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: run docker cleanup cronjob
   cron: name="docker cleanup" minute=15 user="root" job="/usr/bin/docker rmi $(/usr/bin/docker images -q --filter 'dangling=true')"
