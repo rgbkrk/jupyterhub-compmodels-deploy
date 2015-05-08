@@ -9,8 +9,8 @@
   when: github_client_secret == ''
 - fail: msg="oauth_callback_url is not defined"
   when: oauth_callback_url == ''
-- fail: msg="instructor list is empty"
-  when: instructors|length == 0
+- fail: msg="admin list is empty"
+  when: jupyterhub_admins|length == 0
 
 - name: iptables configuration
   command: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8000

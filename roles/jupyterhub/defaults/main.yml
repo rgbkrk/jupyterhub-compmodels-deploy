@@ -21,13 +21,13 @@ oauth_callback_url: ''
 # necessary for the SwarmSpawner to actually be able to communicate with swarm
 docker_tls_path: /root/.docker
 
-# These are the instructors that will have JupyterHub admin access. This list
+# These are the usernames that will have JupyterHub admin access. This list
 # should probably be overwritten in an encrypted vault file.
-instructors: []
+jupyterhub_admins: []
 
-# These are the students that have access to JupyterHub, but not admin access.
+# These are the usernames that have access to JupyterHub, but not admin access.
 # This list should probably be overwritten in an encrypted vault file.
-students: []
+jupyterhub_users: []
 
 # Needed to make sure the API version matches with docker-py
 docker_api_version: 1.16
