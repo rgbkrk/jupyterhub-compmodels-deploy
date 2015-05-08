@@ -132,33 +132,3 @@ this when people might be using the hub!
 If you need to run a particular subset of the deploy operations, you can pass a `-t` flag to specify a "tag".
 For example, to do all tasks relating to the statistics service, you would run `./script deploy -t stats`.
 These tags are defined in the tasks themselves, for example if you look at `roles/jupyterhub_host/tasks/stats.yml` you'll see that the tasks all have a "stats" tag as well as a "rebuild-tag".
-
-## Releasing assignments
-
-To release an assignment:
-
-```
-./script/release
-```
-
-This will prompt you for the name of the assignment. You'll need to have also
-specified the path to the assignments in `vars.local.yml` (if that file does not
-exist, copy `vars.yml` and then edit it).
-
-Also, note that if the assignment folder already exists in the user's home
-directory, then it will NOT be overridden by default.
-
-## Collecting assignments
-
-To collect assignments:
-
-```
-./script/download
-```
-
-This will prompt you for the name of the assignment to download.
-You'll need to have also specified the path to the assignments in `vars.local.yml` (if that file does not exist, copy `vars.yml` and edit it).
-
-## Returning assignments
-
-Coming soon!

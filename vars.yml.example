@@ -3,6 +3,3 @@
 
 # Are we testing?
 test: no
-
-# Path to assignments
-assignment_path: /path/to/your/assignments
