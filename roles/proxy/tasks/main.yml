@@ -1,4 +1,20 @@
 ---
+- name: stop and remove nginx container
+  docker:
+    docker_api_version: "{{ docker_api_version }}"
+    state: absent
+    image: compmodels/nginx
+    name: nginx
+  sudo: yes
+
+- name: stop and remove static files container
+  docker:
+    docker_api_version: "{{ docker_api_version }}"
+    state: absent
+    image: jupyter/systemuser
+    name: static-files
+  sudo: yes
+
 # Get static resources from the userland container
 - name: static files container
   docker:
@@ -25,18 +41,26 @@
   - from: ssl.crt.j2
     to: "{{ ssl_cert_path }}"
   sudo: yes
-  notify:
-  - reload nginx configuration
 
 - name: nginx configuration
   template: src=nginx.conf.j2 dest={{ nginx_config_dir }}/nginx.conf mode=0644
   sudo: yes
-  notify:
-  - reload nginx configuration
+
+- name: copy the Dockerfile to the nginx configuration directory
+  template: src=Dockerfile.j2 dest={{ nginx_config_dir }}/Dockerfile mode=0644
+  sudo: yes
+
+- name: build tmpnb nginx image
+  docker_image:
+    path: "{{ nginx_config_dir }}"
+    name: compmodels/nginx
+    state: build
+  sudo: yes
 
 - name: launch nginx
   docker:
-    image: nginx
+    docker_api_version: "{{ docker_api_version }}"
+    image: compmodels/nginx
     state: running
     name: nginx
     volumes: "{{ nginx_volumes }}"
