@@ -56,10 +56,13 @@ target/
 .ipynb_checkpoints
 
 # Ansible secrets and local overrides
-vars.local.yml
+vars.yml
 inventory
 secrets.yml
 certificates
 /users.yml
 /survey.csv
 vault-password
+old
+vars.local.yml
+certificates.bak

@@ -1,0 +1,7 @@
+---
+# Path to the NFS volume on the host
+nfspath: ''
+# Path to mount NFS on the host
+nfsmount: ''
+# Domain for idmapd
+nfsdomain: ''

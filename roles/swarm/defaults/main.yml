@@ -1,0 +1,17 @@
+---
+# This is where the TLS certificates and keys should be stored for Docker
+docker_tls_path: /root/.docker
+
+# This is the port that swarm will attempt to connect to for each of the
+# Docker hosts
+docker_server_port: 2376
+
+# This is the port that swarm itself will run on
+docker_swarm_port: 2376
+
+# This is the strategy that swarm will use to allocate containers. For details
+# on the different options, see the swarm documentation.
+docker_swarm_strategy: spread
+
+# Needed to make sure the API version matches with docker-py
+docker_api_version: 1.16

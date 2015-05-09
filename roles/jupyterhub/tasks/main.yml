@@ -1,0 +1,105 @@
+---
+- fail: msg="configproxy_auth_token is not defined"
+  when: configproxy_auth_token == ''
+- fail: msg="cookie_secret is not defined"
+  when: cookie_secret == ''
+- fail: msg="github_client_id is not defined"
+  when: github_client_id == ''
+- fail: msg="github_client_secret is not defined"
+  when: github_client_secret == ''
+- fail: msg="oauth_callback_url is not defined"
+  when: oauth_callback_url == ''
+- fail: msg="instructor list is empty"
+  when: instructors|length == 0
+
+- name: iptables configuration
+  command: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8000
+  sudo: yes
+
+- name: stop and remove jupyterhub container
+  docker:
+    docker_api_version: "{{ docker_api_version }}"
+    state: absent
+    image: compmodels/jupyterhub
+    name: jupyterhub
+  sudo: yes
+
+- name: create the jupyterhub_db directory
+  file: path=/srv/jupyterhub_db state=directory
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: create jupyterhub.sqlite
+  file: path=/srv/jupyterhub_db/jupyterhub.sqlite state=touch mode=0600
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: create the jupyterhub directory
+  file: path=/srv/jupyterhub state=directory
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: copy the Dockerfile to the jupyterhub directory
+  copy:
+    src: Dockerfile
+    dest: /srv/jupyterhub/Dockerfile
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: copy jupyterhub_config.py to the jupyterhub directory
+  template:
+    src: jupyterhub_config.py
+    dest: /srv/jupyterhub/jupyterhub_config.py
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: create the userlist
+  template: src=userlist.j2 dest=/srv/jupyterhub/userlist
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: add swarmspawner.py
+  copy: src=swarmspawner.py dest=/srv/jupyterhub/swarmspawner.py
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: add docker_oauth.py
+  copy: src=docker_oauth.py dest=/srv/jupyterhub/docker_oauth.py
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: build compmodels/jupyterhub image
+  shell: docker build -t compmodels/jupyterhub /srv/jupyterhub
+  sudo: yes
+  tags:
+    - docker-rebuild
+
+- name: launch jupyterhub
+  docker:
+    docker_api_version: "{{ docker_api_version }}"
+    state: running
+    image: compmodels/jupyterhub
+    detach: true
+    net: host
+    name: jupyterhub
+    env:
+      GITHUB_CLIENT_ID: "{{ github_client_id }}"
+      GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
+      OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
+      JPY_COOKIE_SECRET: "{{ cookie_secret }}"
+      CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
+    volumes:
+        - /var/run/docker.sock:/docker.sock
+        - /var/run/restuser.sock:/restuser.sock
+        - /srv/jupyterhub_db:/srv/jupyterhub_db
+        - "{{ docker_tls_path }}:{{ docker_tls_path }}"
+  tags:
+    - docker-rebuild

@@ -1,0 +1,3 @@
+{% for host in groups['jupyterhub_nodes'] %}
+{{ hostvars[host]['ansible_ssh_host'] }}:{{ docker_server_port }}
+{% endfor %}

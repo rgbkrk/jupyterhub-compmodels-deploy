@@ -1,2 +1,0 @@
-DOCKER_OPTS="--icc=false"
-DOCKER_TLS_VERIFY=1

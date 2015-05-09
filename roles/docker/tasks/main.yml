@@ -1,4 +1,11 @@
 ---
+- fail: msg="docker_ca_cert is undefined"
+  when: (docker_client_tls or docker_server_tls) and docker_ca_cert == ''
+- fail: msg="docker_tls_cert is undefined"
+  when: (docker_client_tls or docker_server_tls) and docker_tls_cert == ''
+- fail: msg="docker_tls_key is undefined"
+  when: (docker_client_tls or docker_server_tls) and docker_tls_key == ''
+
 - name: tweak grub settings
   lineinfile:
     dest: /etc/default/grub
@@ -50,20 +57,14 @@
   apt: update_cache=yes name=lxc-docker
   sudo: yes
 
-- name: install server docker configuration
-  template: src=docker_server dest=/etc/default/docker mode=0644
+- name: install docker configuration
+  template: src=docker_config dest=/etc/default/docker mode=0644
   sudo: yes
-  when: '"jupyterhub_nodes" not in group_names'
-
-- name: install client docker configuration
-  template: src=docker_client dest=/etc/default/docker mode=0644
-  sudo: yes
-  when: '"jupyterhub_nodes" in group_names'
 
 - name: create docker TLS directory
   file: path={{ docker_tls_path }} state=directory
   sudo: yes
-  when: '"jupyterhub_nodes" in group_names or "jupyterhub_host" in group_names'
+  when: docker_client_tls or docker_server_tls
 
 - name: install docker TLS credentials
   template: src={{ item.from }} dest={{ item.to }} mode=0644
@@ -74,25 +75,14 @@
       to: "{{ docker_tls_path }}/key.pem"
     - from: cert.pem.j2
       to: "{{ docker_tls_path }}/cert.pem"
-  when: '"jupyterhub_nodes" in group_names or "jupyterhub_host" in group_names'
+  when: docker_client_tls or docker_server_tls
 
 - name: restart docker
-  service: name=docker state=restarted
-  sudo: yes
-
-- name: python
-  apt: name=python state=latest
-  sudo: yes
-
-- name: pip install script
-  get_url: dest=/tmp/get_pip.py url=https://bootstrap.pypa.io/get-pip.py
-
-- name: pip
-  command: python /tmp/get_pip.py creates=/usr/local/bin/pip
+  shell: service docker restart
   sudo: yes
 
 - name: docker-py
-  pip: name=docker-py state=present version=0.7.2
+  pip: name=docker-py state=present version=1.1.0
   sudo: yes
   tags:
     - docker-rebuild
@@ -111,7 +101,8 @@
   cron: name="docker cleanup" state=absent
 
 - name: pull docker images
-  command: docker pull {{ docker_image }}
+  command: docker pull {{ item }}
+  with_items: docker_images
   sudo: yes
   tags:
     - docker-rebuild

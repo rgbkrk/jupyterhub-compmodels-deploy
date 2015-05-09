@@ -3,7 +3,7 @@
 This repository contains an Ansible playbook for launching JupyterHub for the
 Computational Models of Cognition class at Berkeley.
 
-The setup is a bit complex, so this readme will try to break it down and explain everything that's going on.
+The setup is a bit complex, so this readme will try to break it down and explain everything that's going on. If you want to jump right into the details of how to deploy, see first the [installation instructions](INSTALL.md) and then the section on [deploying](#deploying).
 
 ## Overview
 
@@ -114,26 +114,6 @@ In general, the node servers probably don't need to be accessed directly because
 Each node server is a NFS client, with the NFS filesystem mounted at `/home`.
 Additionally, each node server is set up to run the singleuser IPython notebook servers in docker containers.
 The image is based on `jupyter/systemuser`, with the only differences being that `nbgrader` is installed so that students can validate and submit their assignments, and that terminado is installed so that users can have access to a terminal if they so desire.
-
-## Potential issues and bugs
-
-### Swarm leaks file descriptors
-
-Every time a user container is started or stopped, swarm opens a new file and then never closes it.
-There is a limit on the number of files that a process can have open (1024), so eventually swarm will reach this limit.
-When this happens, you will see in the JupyterHub and swarm logs errors that look like "Too many open files".
-You can verify the problem by checking the number of files that swarm has open:
-
-```
-lsof -a -p $(pidof swarm) | wc -l
-```
-
-If this number returned by this command gets up to 1024, then users trying to access their server will get a "500: Interal Server Error" message.
-The solution for now (until the bug is fixed in swarm proper) is to periodically restart swarm:
-
-```
-docker restart swarm
-```
 
 ## Deploying
 

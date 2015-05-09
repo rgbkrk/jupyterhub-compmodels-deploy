@@ -1,0 +1,14 @@
+---
+# Rename this file to users.vault.yml and edit it to include usernames for your
+# own instructors and students.
+#
+# Note that after you do this, you should encrypt the file with ansible vault
+# so that the usernames are not public:
+#
+#     ansible-vault encrypt users.vault.yml
+#
+instructors:
+- jhamrick
+students:
+- minrk
+- rgbkrk

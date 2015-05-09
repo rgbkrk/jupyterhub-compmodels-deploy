@@ -1,0 +1,11 @@
+---
+- name: python
+  apt: name=python state=latest
+  sudo: yes
+
+- name: pip install script
+  get_url: dest=/tmp/get_pip.py url=https://bootstrap.pypa.io/get-pip.py
+
+- name: pip
+  command: python /tmp/get_pip.py creates=/usr/local/bin/pip
+  sudo: yes

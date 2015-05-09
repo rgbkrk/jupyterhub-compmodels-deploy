@@ -1,0 +1,4 @@
+---
+
+# Needed to make sure the API version matches with docker-py
+docker_api_version: 1.16
