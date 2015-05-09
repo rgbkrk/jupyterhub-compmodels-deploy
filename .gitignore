@@ -64,3 +64,5 @@ certificates
 /survey.csv
 vault-password
 old
+vars.local.yml
+certificates.bak
