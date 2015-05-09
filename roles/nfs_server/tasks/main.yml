@@ -12,19 +12,19 @@
   tags:
     - nfs
 
-- name: install mdadm
-  apt: update_cache=yes cache_valid_time=600 name=mdadm state=latest
-  sudo: yes
-  tags:
-    - nfs
-  when: not test
+# - name: install mdadm
+#   apt: update_cache=yes cache_valid_time=600 name=mdadm state=latest
+#   sudo: yes
+#   tags:
+#     - nfs
+#   when: not test
 
-- name: run the lsi-cards script
-  script: lsi-cards {{ ansible_fqdn }} /var/lib/docker creates=/etc/{{ ansible_fqdn }}.raid-setup
-  sudo: yes
-  tags:
-    - nfs
-  when: not test
+# - name: run the lsi-cards script
+#   script: lsi-cards {{ ansible_fqdn }} /var/lib/docker creates=/etc/{{ ansible_fqdn }}.raid-setup
+#   sudo: yes
+#   tags:
+#     - nfs
+#   when: not test
 
 - name: stop nfs
   service: name=nfs-kernel-server state=stopped
