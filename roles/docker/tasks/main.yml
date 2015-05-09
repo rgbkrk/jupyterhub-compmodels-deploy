@@ -78,7 +78,7 @@
   when: docker_client_tls or docker_server_tls
 
 - name: restart docker
-  service: name=docker state=restarted
+  shell: service docker restart
   sudo: yes
 
 - name: docker-py
