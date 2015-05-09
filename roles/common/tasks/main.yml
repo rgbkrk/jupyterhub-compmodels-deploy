@@ -7,5 +7,9 @@
   apt: upgrade=safe
   sudo: yes
 
+- name: install git
+  apt: name=git state=latest
+  sudo: yes
+
 - include: ssh.yml
 - include: python.yml
