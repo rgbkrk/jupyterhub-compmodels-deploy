@@ -33,7 +33,7 @@
     - nfs
 
 - name: unmount existing volumes
-  shell: umount {{ nfsmount }} || true
+  shell: umount {{ nfspath }}/home || true
   sudo: yes
   tags:
     - nfs
