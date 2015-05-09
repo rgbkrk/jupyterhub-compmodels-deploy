@@ -23,7 +23,7 @@
     state: absent
 
 - name: install packages with apt
-  apt: update_cache=yes cache_valid_time=600 name=python-netifaces,duplicity state=latest
+  apt: update_cache=yes cache_valid_time=600 name=python-netifaces,duplicity,gcc,python-dev state=latest
   sudo: yes
 
 - name: install pyrax
