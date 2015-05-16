@@ -3,7 +3,7 @@
   connection: local
   vars_files:
     - 'secrets.vault.yml'
-    - ['vars.local.yml', 'vars.yml']
+    - 'vars.yml'
 
   tasks:
     - name: create feedback
@@ -20,7 +20,7 @@
   vars_files:
     - 'secrets.vault.yml'
     - 'users.vault.yml'
-    - ['vars.local.yml', 'vars.yml']
+    - 'vars.yml'
 
   tasks:
     - name: remove existing feedback
@@ -40,6 +40,5 @@
     - name: extract feedback to user directories
       return_feedback:
         src: '/srv/assignments/feedback'
-        #overwrite: yes
         overwrite: no
       sudo: yes
