@@ -3,12 +3,16 @@
   vars_files:
     - 'secrets.vault.yml'
     - 'users.vault.yml'
-    - ['vars.local.yml', 'vars.yml']
+    - 'vars.yml'
 
   vars_prompt:
     assignment: "Which assignment?"
 
   tasks:
+    - name: create /srv/assignments
+      file: path=/srv/assignments state=directory
+      sudo: yes
+
     - name: collect submissions
       collect_submissions:
         src: '.nbgrader/submissions/{{ assignment }}.tar.gz'
