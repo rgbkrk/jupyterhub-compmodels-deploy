@@ -7,6 +7,7 @@ import sys
 # Base configuration
 c.JupyterHub.log_level = "INFO"
 c.JupyterHub.db_url = 'sqlite:////srv/jupyterhub_db/jupyterhub.sqlite'
+c.JupyterHub.admin_access = True
 
 # Configure the authenticator
 c.JupyterHub.authenticator_class = 'docker_oauth.DockerOAuthenticator'
