@@ -28,6 +28,14 @@
   tags:
     - docker-rebuild
 
+- name: copy nbgrader_config to the systemuser directory
+  copy:
+    src: nbgrader_config.py
+    dest: /srv/systemuser/nbgrader_config.py
+  sudo: yes
+  tags:
+    - docker-rebuild
+
 - name: build compmodels/systemuser image
   shell: docker build -t compmodels/systemuser /srv/systemuser
   sudo: yes
