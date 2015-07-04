@@ -21,6 +21,7 @@ c.SystemUserSpawner.container_image = 'compmodels/systemuser'
 c.DockerSpawner.tls_cert = '{{ docker_tls_path }}/cert.pem'
 c.DockerSpawner.tls_key = '{{ docker_tls_path }}/key.pem'
 c.DockerSpawner.remove_containers = True
+c.DockerSpawner.volumes = {'/srv/nbgrader': '/srv/nbgrader'}
 
 # The docker instances need access to the Hub, so the default loopback port
 # doesn't work:

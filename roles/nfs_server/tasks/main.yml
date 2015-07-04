@@ -1,8 +1,6 @@
 ---
 - fail: msg="nfspath is not defined"
   when: nfspath == ''
-- fail: msg="nfsmount is not defined"
-  when: nfsmount == ''
 - fail: msg="nfsdomain is not defined"
   when: nfsdomain == ''
 
@@ -33,8 +31,11 @@
     - nfs
 
 - name: unmount existing volumes
-  shell: umount {{ nfspath }}/home || true
+  shell: umount {{ nfspath }}/{{ item }} || true
   sudo: yes
+  with_items:
+    - home
+    - nbgrader
   tags:
     - nfs
 
@@ -44,20 +45,38 @@
   tags:
     - nfs
 
-- name: create sub directory for NFS volume
+- name: create sub directory for home volume
   file: path={{ nfspath }}/home state=directory
   sudo: yes
   tags:
     - nfs
 
-- name: create directory for NFS mount
-  file: path={{ nfsmount }} state=directory
+- name: create sub directory for nbgrader volume
+  file: path={{ nfspath }}/nbgrader state=directory mode=777
   sudo: yes
   tags:
     - nfs
 
-- name: mount NFS volume
-  shell: mount --bind {{ nfsmount }} {{ nfspath }}/home
+- name: create home directory
+  file: path=/home state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: create nbgrader directory
+  file: path=/srv/nbgrader state=directory
+  sudo: yes
+  tags:
+    - nfs
+
+- name: mount home
+  shell: mount --bind /home {{ nfspath }}/home
+  sudo: yes
+  tags:
+    - nfs
+
+- name: mount nbgrader
+  shell: mount --bind /srv/nbgrader {{ nfspath }}/nbgrader
   sudo: yes
   tags:
     - nfs
