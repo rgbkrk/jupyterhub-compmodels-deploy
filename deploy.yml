@@ -25,7 +25,6 @@
   - 'vars.yml'
   roles:
   - nfs_server
-  - backup
 
 - hosts: jupyterhub_nodes
   vars_files:
