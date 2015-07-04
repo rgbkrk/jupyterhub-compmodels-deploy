@@ -1,5 +1,13 @@
 ---
-- name: stop and remove running singleuser containers
+- name: stop running singleuser containers
+  shell: docker stop $(docker ps -aq) || true
+  sudo: yes
+
+- name: remove singleuser containers
+  shell: docker rm $(docker ps -aq) || true
+  sudo: yes
+
+- name: remove compmodels/systemuser images
   docker:
     docker_api_version: "{{ docker_api_version }}"
     state: absent
