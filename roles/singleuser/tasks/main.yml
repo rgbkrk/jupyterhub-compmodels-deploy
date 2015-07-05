@@ -1,4 +1,7 @@
 ---
+- fail: msg="course_id is not defined"
+  when: course_id == ''
+
 - name: stop running singleuser containers
   shell: docker stop $(docker ps -aq) || true
   sudo: yes
@@ -29,7 +32,7 @@
     - docker-rebuild
 
 - name: copy nbgrader_config to the systemuser directory
-  copy:
+  template:
     src: nbgrader_config.py
     dest: /srv/systemuser/nbgrader_config.py
   sudo: yes
