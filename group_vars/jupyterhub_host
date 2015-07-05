@@ -1,6 +1,7 @@
 ---
 docker_images:
   - jupyter/jupyterhub
+  - ipython/scipystack
 
 docker_server_tls: no
 docker_client_tls: yes
