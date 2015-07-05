@@ -5,3 +5,14 @@ jupyterhub_admin_user: ''
 
 # Needed to make sure the API version matches with docker-py
 docker_api_version: 1.16
+
+# Root url of the hub
+hub_base_url: ''
+
+# User who will run nbgrader and root of the nbgrader directory structure
+# relative to that user's home directory
+nbgrader_user: ''
+nbgrader_root: ''
+
+# Course id for the formgrader
+course_id: ''

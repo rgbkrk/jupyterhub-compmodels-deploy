@@ -1,6 +1,14 @@
 ---
 - fail: msg="jupyterhub_admin_user is not defined"
   when: jupyterhub_admin_user == ''
+- fail: msg="hub_base_url is not defined"
+  when: hub_base_url == ''
+- fail: msg="nbgrader_user is not defined"
+  when: nbgrader_user == ''
+- fail: msg="nbgrader_root is not defined"
+  when: nbgrader_root == ''
+- fail: msg="course_id is not defined"
+  when: course_id == ''
 
 - name: stop and remove formgrader container
   docker:
@@ -15,11 +23,15 @@
   sudo: yes
 
 - name: copy the Dockerfile to /srv/formgrader
-  copy: src=Dockerfile dest=/srv/formgrader/Dockerfile
+  template: src=Dockerfile.j2 dest=/srv/formgrader/Dockerfile
   sudo: yes
 
 - name: copy the nbgrader_config.py to /srv/formgrader
   template: src=nbgrader_config.py dest=/srv/formgrader/nbgrader_config.py
+  sudo: yes
+
+- name: copy the grader list to /srv/formgrader
+  template: src=graderlist.j2 dest=/srv/formgrader/graderlist
   sudo: yes
 
 - name: build compmodels/formgrader image
@@ -43,5 +55,5 @@
       JPY_API_TOKEN: "{{ jpy_api_token.stdout }}"
       CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
     volumes:
-        - /home/jhamrick/class_files:/home/jhamrick/class_files
+        - /home/{{ nbgrader_user }}/{{ nbgrader_root }}:/home/{{ nbgrader_user }}/{{ nbgrader_root }}
   sudo: yes

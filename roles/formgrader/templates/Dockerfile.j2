@@ -5,7 +5,8 @@ RUN pip2.7 install git+git://github.com/jupyter/nbgrader.git@master
 
 # Add nbgrader config
 ADD nbgrader_config.py /etc/ipython/nbgrader_config.py
+ADD graderlist /etc/ipython/graderlist
 
 # Switch to the right directory and run the formgrader
-WORKDIR /home/jhamrick/class_files
-CMD ["nbgrader", "formgrade", "--log-level=10"]
+WORKDIR /home/{{ nbgrader_user }}/{{ nbgrader_root }}
+CMD ["nbgrader", "formgrade"]
