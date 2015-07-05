@@ -1,0 +1,47 @@
+---
+- fail: msg="jupyterhub_admin_user is not defined"
+  when: jupyterhub_admin_user == ''
+
+- name: stop and remove formgrader container
+  docker:
+    docker_api_version: "{{ docker_api_version }}"
+    state: absent
+    image: compmodels/formgrader
+    name: formgrader
+  sudo: yes
+
+- name: create the /srv/formgrader directory
+  file: path=/srv/formgrader state=directory
+  sudo: yes
+
+- name: copy the Dockerfile to /srv/formgrader
+  copy: src=Dockerfile dest=/srv/formgrader/Dockerfile
+  sudo: yes
+
+- name: copy the nbgrader_config.py to /srv/formgrader
+  template: src=nbgrader_config.py dest=/srv/formgrader/nbgrader_config.py
+  sudo: yes
+
+- name: build compmodels/formgrader image
+  shell: docker build -t compmodels/formgrader /srv/formgrader
+  sudo: yes
+
+- name: get a jupyterhub api token
+  command: docker exec jupyterhub jupyterhub token -f /srv/jupyterhub/jupyterhub_config.py {{ jupyterhub_admin_user }}
+  register: jpy_api_token
+  sudo: yes
+
+- name: launch formgrader
+  docker:
+    docker_api_version: "{{ docker_api_version }}"
+    state: running
+    image: compmodels/formgrader
+    detach: true
+    name: formgrader
+    net: host
+    env:
+      JPY_API_TOKEN: "{{ jpy_api_token.stdout }}"
+      CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
+    volumes:
+        - /home/jhamrick/class_files:/home/jhamrick/class_files
+  sudo: yes

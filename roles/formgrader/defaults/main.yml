@@ -1,0 +1,7 @@
+---
+# This is the name of an admin user of the JupyterHub instance, necessary
+# to get an API key from JupyterHub
+jupyterhub_admin_user: ''
+
+# Needed to make sure the API version matches with docker-py
+docker_api_version: 1.16
