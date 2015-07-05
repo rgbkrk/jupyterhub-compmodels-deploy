@@ -18,7 +18,7 @@ touch certificates/password
 chmod 600 certificates/password
 cat /dev/random | head -c 128 | base64 > certificates/password
 
-KEYMASTER="keymaster="docker run --rm -v $(pwd)/certificates/:/certificates/ cloudpipe/keymaster"
+KEYMASTER="docker run --rm -v $(pwd)/certificates/:/certificates/ cloudpipe/keymaster"
 
 ${KEYMASTER} ca
 ```
