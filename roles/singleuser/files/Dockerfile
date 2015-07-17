@@ -1,7 +1,7 @@
 FROM jupyter/systemuser
 
 # Install nbgrader
-RUN pip2.7 install git+git://github.com/jupyter/nbgrader.git@master
+RUN pip2.7 install nbgrader
 
 # Install terminado
 RUN pip2.7 install terminado
