@@ -26,7 +26,7 @@ class SwarmSpawner(SystemUserSpawner):
                 raise gen.Return(node)
 
     @gen.coroutine
-    def start(self, image=None, extra_create_kwargs=None):
+    def start(self, image=None, extra_create_kwargs=None, extra_host_config=None):
         # look up mapping of node names to ip addresses
         info = yield self.docker('info')
         num_nodes = int(info['DriverStatus'][3][1])
@@ -37,15 +37,23 @@ class SwarmSpawner(SystemUserSpawner):
             self.node_info[node] = ip_port.split(":")[0]
         self.log.debug("Swarm nodes are: {}".format(self.node_info))
 
-        # start the container
+        # specify extra host configuration
+        if extra_host_config is None:
+            extra_host_config = {}
+        if 'mem_limit' not in extra_host_config:
+            extra_host_config['mem_limit'] = '1g'
+
+        # specify extra creation options
         if extra_create_kwargs is None:
             extra_create_kwargs = {}
-        if 'mem_limit' not in extra_create_kwargs:
-            extra_create_kwargs['mem_limit'] = '1g'
         if 'working_dir' not in extra_create_kwargs:
             extra_create_kwargs['working_dir'] = self.homedir
+
+        # start the container
         yield DockerSpawner.start(
-            self, image=image, extra_create_kwargs=extra_create_kwargs)
+            self, image=image,
+            extra_create_kwargs=extra_create_kwargs,
+            extra_host_config=extra_host_config)
 
         # figure out what the node is and then get its ip
         name = yield self.lookup_node_name()
