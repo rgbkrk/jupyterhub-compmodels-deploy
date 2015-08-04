@@ -6,7 +6,7 @@ from tornado.httpclient import AsyncHTTPClient, HTTPError
 from tornado.netutil import Resolver
 
 from jupyterhub.auth import LocalAuthenticator
-from oauthenticator import GitHubOAuthenticator
+from oauthenticator import GoogleAppsOAuthenticator
 from dockerspawner.systemuserspawner import SystemUserSpawner
 
 
@@ -64,9 +64,9 @@ class DockerAuthenticator(LocalAuthenticator):
         self.db.commit()
 
 
-class DockerOAuthenticator(DockerAuthenticator, GitHubOAuthenticator):
+class DockerOAuthenticator(DockerAuthenticator, GoogleAppsOAuthenticator):
     """A version that mixes in local system user creation from within a
-    docker container, and GitHub OAuthentication.
+    docker container, and Google OAuthentication.
 
     """
     pass

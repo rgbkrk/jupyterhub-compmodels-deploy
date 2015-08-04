@@ -11,11 +11,12 @@ configproxy_auth_token: ''
 # override it in an encrypted vault file.
 cookie_secret: ''
 
-# Get these from the GitHub OAuth application. Note that these should never
+# Get these from the Google OAuth application. Note that these should never
 # be stored in plaintext, they should be overwritten in an encrypted vault file.
-github_client_id: ''
-github_client_secret: ''
+oauth_client_id: ''
+oauth_client_secret: ''
 oauth_callback_url: ''
+oauth_hosted_domain: ''
 
 # This is the path to where the docker TLS certificates are stored -- this is
 # necessary for the SwarmSpawner to actually be able to communicate with swarm

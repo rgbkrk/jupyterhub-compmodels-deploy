@@ -9,7 +9,7 @@ RUN pip3 install --upgrade pip
 # Install dockerspawner and oauthenticator
 RUN /usr/local/bin/pip3 install docker-py
 RUN /usr/local/bin/pip3 install git+git://github.com/jupyter/dockerspawner.git
-RUN /usr/local/bin/pip3 install git+git://github.com/jupyter/oauthenticator.git
+RUN /usr/local/bin/pip3 install git+git://github.com/ryanlovett/jh-google-oauthenticator.git
 
 # Add variable to allow connecting to the docker swarm
 ENV DOCKER_HOST https://127.0.0.1:2376

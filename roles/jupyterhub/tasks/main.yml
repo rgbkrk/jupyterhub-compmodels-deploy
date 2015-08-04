@@ -3,12 +3,14 @@
   when: configproxy_auth_token == ''
 - fail: msg="cookie_secret is not defined"
   when: cookie_secret == ''
-- fail: msg="github_client_id is not defined"
-  when: github_client_id == ''
-- fail: msg="github_client_secret is not defined"
-  when: github_client_secret == ''
+- fail: msg="oauth_client_id is not defined"
+  when: oauth_client_id == ''
+- fail: msg="oauth_client_secret is not defined"
+  when: oauth_client_secret == ''
 - fail: msg="oauth_callback_url is not defined"
   when: oauth_callback_url == ''
+- fail: msg="oauth_hosted_domain is not defined"
+  when: oauth_hosted_domain == ''
 - fail: msg="admin list is empty"
   when: jupyterhub_admins|length == 0
 
@@ -62,9 +64,10 @@
     net: host
     name: jupyterhub
     env:
-      GITHUB_CLIENT_ID: "{{ github_client_id }}"
-      GITHUB_CLIENT_SECRET: "{{ github_client_secret }}"
+      OAUTH_CLIENT_ID: "{{ oauth_client_id }}"
+      OAUTH_CLIENT_SECRET: "{{ oauth_client_secret }}"
       OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
+      HOSTED_DOMAIN: "{{ oauth_hosted_domain }}"
       JPY_COOKIE_SECRET: "{{ cookie_secret }}"
       CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
     volumes:
