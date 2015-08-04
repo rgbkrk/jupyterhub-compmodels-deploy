@@ -1,4 +1,5 @@
 {% for host in groups['jupyterhub_nodes'] %}
 {{ nfspath }}      {{ hostvars[host]['fqdn'] }}(rw,fsid=0,no_subtree_check,sync)
 {{ nfspath }}/home {{ hostvars[host]['fqdn'] }}(rw,nohide,insecure,no_subtree_check,async)
+{{ nfspath }}/nbgrader {{ hostvars[host]['fqdn'] }}(rw,nohide,insecure,no_subtree_check,async)
 {% endfor %}

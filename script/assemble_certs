@@ -33,14 +33,7 @@ ca_name = "ca"
 name_map = {
     "jupyterhub_host": "compmodels",
     "jupyterhub_node1": "compmodels-node-01",
-    "jupyterhub_node2": "compmodels-node-02",
-    "jupyterhub_node3": "compmodels-node-03",
-    "jupyterhub_node4": "compmodels-node-04",
-    "jupyterhub_node5": "compmodels-node-05",
-    "jupyterhub_node6": "compmodels-node-06",
-    "jupyterhub_node7": "compmodels-node-07",
-    "jupyterhub_host_test": "compmodels-hub-test",
-    "jupyterhub_node_test": "compmodels-node-test"
+    "jupyterhub_node2": "compmodels-node-02"
 }
 
 ################################################################################
