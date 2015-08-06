@@ -6,26 +6,21 @@
     image: compmodels/swarm
     name: swarm
 
-- name: create the /srv/swarm directory
-  file: path=/srv/swarm state=directory
+- name: create the /root/.swarm directory
+  file: path=/root/.swarm state=directory
 
 - name: create the cluster list
-  template: src=cluster.j2 dest=/srv/swarm/cluster
-
-- name: copy the Dockerfile to /srv/swarm
-  template: src=Dockerfile.j2 dest=/srv/swarm/Dockerfile
-
-- name: build compmodels/swarm image
-  shell: docker build -t compmodels/swarm /srv/swarm
+  template: src=cluster.j2 dest=/root/.swarm/cluster
 
 - name: launch swarm
   docker:
     docker_api_version: "{{ docker_api_version }}"
     state: running
-    image: compmodels/swarm
+    image: dockerswarm/swarm
     detach: true
     name: swarm
     net: host
+    command: manage --strategy={{ docker_swarm_strategy }} --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem -H=127.0.0.1:{{ docker_swarm_port }} file:///root/.swarm/cluster
     volumes:
         - /root/.swarm:/root/.swarm
         - "{{ docker_tls_path }}:{{ docker_tls_path }}"
