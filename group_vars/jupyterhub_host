@@ -1,10 +1,9 @@
 ---
 docker_images:
-  - jupyter/jupyterhub
-  - ipython/scipystack
   - compmodels/cull
   - compmodels/stats
   - compmodels/formgrader
+  - compmodels/jupyterhub
   - dockerswarm/swarm:0.3.0
 
 docker_server_tls: no

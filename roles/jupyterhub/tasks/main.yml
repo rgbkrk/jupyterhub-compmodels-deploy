@@ -30,30 +30,11 @@
 - name: create jupyterhub.sqlite
   file: path=/srv/jupyterhub_db/jupyterhub.sqlite state=touch mode=0600
 
-- name: create the jupyterhub directory
-  file: path=/srv/jupyterhub state=directory
-
-- name: copy the Dockerfile to the jupyterhub directory
-  copy:
-    src: Dockerfile
-    dest: /srv/jupyterhub/Dockerfile
-
-- name: copy jupyterhub_config.py to the jupyterhub directory
-  template:
-    src: jupyterhub_config.py
-    dest: /srv/jupyterhub/jupyterhub_config.py
+- name: create the jupyterhub_users directory
+  file: path=/srv/jupyterhub_users state=directory
 
 - name: create the userlist
-  template: src=userlist.j2 dest=/srv/jupyterhub/userlist
-
-- name: add docker_oauth.py
-  copy: src=docker_oauth.py dest=/srv/jupyterhub/docker_oauth.py
-
-- name: add swarmspawner.py
-  copy: src=swarmspawner.py dest=/srv/jupyterhub/swarmspawner.py
-
-- name: build compmodels/jupyterhub image
-  shell: docker build -t compmodels/jupyterhub /srv/jupyterhub
+  template: src=userlist.j2 dest=/srv/jupyterhub_users/userlist
 
 - name: launch jupyterhub
   docker:
@@ -63,6 +44,7 @@
     detach: true
     net: host
     name: jupyterhub
+    command: -f /srv/jupyterhub_config/jupyterhub_config.py
     env:
       OAUTH_CLIENT_ID: "{{ oauth_client_id }}"
       OAUTH_CLIENT_SECRET: "{{ oauth_client_secret }}"
@@ -70,9 +52,11 @@
       HOSTED_DOMAIN: "{{ oauth_hosted_domain }}"
       JPY_COOKIE_SECRET: "{{ cookie_secret }}"
       CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
+      DOCKER_TLS_CERT: '{{ docker_tls_path }}/cert.pem'
+      DOCKER_TLS_KEY: '{{ docker_tls_path }}/key.pem'
+      HUB_IP: '{{ servicenet_ip }}'
     volumes:
-        - /var/run/docker.sock:/docker.sock
-        - /var/run/restuser.sock:/restuser.sock
         - /srv/jupyterhub_db:/srv/jupyterhub_db
+        - /srv/jupyterhub_users:/srv/jupyterhub_users
         - "{{ docker_tls_path }}:{{ docker_tls_path }}"
         - /home:/home
