@@ -13,6 +13,3 @@ hub_base_url: ''
 # relative to that user's home directory
 nbgrader_user: ''
 nbgrader_root: ''
-
-# Course id for the formgrader
-course_id: ''

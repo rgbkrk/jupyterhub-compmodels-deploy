@@ -16,32 +16,13 @@
     state: absent
     image: compmodels/formgrader
     name: formgrader
-  sudo: yes
 
-- name: create the /srv/formgrader directory
-  file: path=/srv/formgrader state=directory
-  sudo: yes
-
-- name: copy the Dockerfile to /srv/formgrader
-  template: src=Dockerfile.j2 dest=/srv/formgrader/Dockerfile
-  sudo: yes
-
-- name: copy the nbgrader_config.py to /srv/formgrader
-  template: src=nbgrader_config.py dest=/srv/formgrader/nbgrader_config.py
-  sudo: yes
-
-- name: copy the grader list to /srv/formgrader
-  template: src=graderlist.j2 dest=/srv/formgrader/graderlist
-  sudo: yes
-
-- name: build compmodels/formgrader image
-  shell: docker build -t compmodels/formgrader /srv/formgrader
-  sudo: yes
+- name: copy the grader list to the nbgrader root directory
+  template: src=graderlist.j2 dest=/home/{{ nbgrader_user }}/{{ nbgrader_root }}/graderlist
 
 - name: get a jupyterhub api token
   command: docker exec jupyterhub jupyterhub token -f /srv/jupyterhub/jupyterhub_config.py {{ jupyterhub_admin_user }}
   register: jpy_api_token
-  sudo: yes
 
 - name: launch formgrader
   docker:
@@ -54,6 +35,8 @@
     env:
       JPY_API_TOKEN: "{{ jpy_api_token.stdout }}"
       CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
+      NOTEBOOK_URL_PREFIX: "{{ nbgrader_root }}"
+      HUBAPI_ADDRESS: "{{ servicenet_ip }}"
+      HUB_BASE_URL: "{{ hub_base_url }}"
     volumes:
-        - /home/{{ nbgrader_user }}/{{ nbgrader_root }}:/home/{{ nbgrader_user }}/{{ nbgrader_root }}
-  sudo: yes
+        - /home/{{ nbgrader_user }}/{{ nbgrader_root }}:/srv/formgrader

@@ -4,6 +4,7 @@ docker_images:
   - ipython/scipystack
   - compmodels/cull
   - compmodels/stats
+  - compmodels/formgrader
   - dockerswarm/swarm:0.3.0
 
 docker_server_tls: no
