@@ -9,17 +9,8 @@
     image: compmodels/stats
     name: stats
 
-- name: create the /srv/stats directory
-  file: path=/srv/stats state=directory
-
-- name: create the /srv/stats/db directory
-  file: path=/srv/stats/db state=directory
-
-- name: copy the Dockerfile to /srv/stats
-  template: src=Dockerfile.j2 dest=/srv/stats/Dockerfile
-
-- name: build compmodels/stats image
-  shell: docker build -t compmodels/stats /srv/stats
+- name: create the /srv/stats_db directory
+  file: path=/srv/stats_db state=directory
 
 - name: get a jupyterhub api token
   command: docker exec jupyterhub jupyterhub token -f /srv/jupyterhub/jupyterhub_config.py {{ jupyterhub_admin_user }}
@@ -33,7 +24,8 @@
     detach: true
     name: stats
     net: host
+    command: --file=/srv/stats_db/activity.sqlite --hub=http://{{ servicenet_ip }}:8081
     env:
       JPY_API_TOKEN: "{{ jpy_api_token.stdout }}"
     volumes:
-        - /srv/stats/db:/srv/stats/db
+        - /srv/stats_db:/srv/stats_db

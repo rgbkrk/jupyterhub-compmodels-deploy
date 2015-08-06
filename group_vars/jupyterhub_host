@@ -2,6 +2,8 @@
 docker_images:
   - jupyter/jupyterhub
   - ipython/scipystack
+  - compmodels/cull
+  - compmodels/stats
 
 docker_server_tls: no
 docker_client_tls: yes

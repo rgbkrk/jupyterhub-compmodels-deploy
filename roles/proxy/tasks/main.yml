@@ -11,14 +11,14 @@
   docker:
     docker_api_version: "{{ docker_api_version }}"
     state: absent
-    image: jupyter/systemuser
+    image: compmodels/systemuser
     name: static-files
   sudo: yes
 
 # Get static resources from the userland container
 - name: static files container
   docker:
-    image: jupyter/systemuser
+    image: compmodels/systemuser
     state: running
     name: static-files
     command: echo "#data-container-hack"

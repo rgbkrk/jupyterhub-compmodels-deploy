@@ -1,6 +1,6 @@
 ---
 docker_images:
-  - jupyter/systemuser
+  - compmodels/systemuser
 
 docker_server_tls: yes
 docker_client_tls: yes

@@ -32,7 +32,6 @@
   - 'vars.yml'
   roles:
   - nfs_client
-  - singleuser
 
 - hosts: jupyterhub_host
   vars_files:

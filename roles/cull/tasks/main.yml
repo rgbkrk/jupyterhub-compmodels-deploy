@@ -9,15 +9,6 @@
     image: compmodels/cull
     name: cull
 
-- name: create the /srv/cull directory
-  file: path=/srv/cull state=directory
-
-- name: copy the Dockerfile to /srv/cull
-  template: src=Dockerfile.j2 dest=/srv/cull/Dockerfile
-
-- name: build compmodels/cull image
-  shell: docker build -t compmodels/cull /srv/cull
-
 - name: get a jupyterhub api token
   command: docker exec jupyterhub jupyterhub token -f /srv/jupyterhub/jupyterhub_config.py {{ jupyterhub_admin_user }}
   register: jpy_api_token
@@ -30,5 +21,6 @@
     detach: true
     name: cull
     net: host
+    command: --timeout=86400 --cull_every=3600 --url=http://{{ servicenet_ip }}:8081/hub
     env:
       JPY_API_TOKEN: "{{ jpy_api_token.stdout }}"
