@@ -40,7 +40,6 @@
   - 'users.vault.yml'
   - 'vars.yml'
   roles:
-  - restuser
   - swarm
   - jupyterhub
   - cull

@@ -46,11 +46,11 @@
 - name: create the userlist
   template: src=userlist.j2 dest=/srv/jupyterhub/userlist
 
-- name: add swarmspawner.py
-  copy: src=swarmspawner.py dest=/srv/jupyterhub/swarmspawner.py
-
 - name: add docker_oauth.py
   copy: src=docker_oauth.py dest=/srv/jupyterhub/docker_oauth.py
+
+- name: add swarmspawner.py
+  copy: src=swarmspawner.py dest=/srv/jupyterhub/swarmspawner.py
 
 - name: build compmodels/jupyterhub image
   shell: docker build -t compmodels/jupyterhub /srv/jupyterhub
@@ -75,3 +75,4 @@
         - /var/run/restuser.sock:/restuser.sock
         - /srv/jupyterhub_db:/srv/jupyterhub_db
         - "{{ docker_tls_path }}:{{ docker_tls_path }}"
+        - /home:/home

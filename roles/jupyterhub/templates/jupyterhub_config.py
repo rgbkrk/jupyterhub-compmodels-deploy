@@ -15,13 +15,13 @@ c.GoogleOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
 c.GoogleOAuthenticator.oauth_client_id = os.environ['OAUTH_CLIENT_ID']
 c.GoogleOAuthenticator.oauth_client_secret = os.environ['OAUTH_CLIENT_SECRET']
 c.GoogleOAuthenticator.hosted_domain = os.environ['HOSTED_DOMAIN']
-c.DockerOAuthenticator.create_system_users = True
+c.LocalAuthenticator.create_system_users = True
 c.Authenticator.admin_users = admin = set()
 c.Authenticator.whitelist = whitelist = set()
 
 # Configure the spawner
 c.JupyterHub.spawner_class = 'swarmspawner.SwarmSpawner'
-c.SystemUserSpawner.container_image = 'compmodels/systemuser'
+c.DockerSpawner.container_image = 'compmodels/systemuser'
 c.DockerSpawner.tls_cert = '{{ docker_tls_path }}/cert.pem'
 c.DockerSpawner.tls_key = '{{ docker_tls_path }}/key.pem'
 c.DockerSpawner.remove_containers = True
