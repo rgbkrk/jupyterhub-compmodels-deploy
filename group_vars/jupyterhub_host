@@ -1,5 +1,6 @@
 ---
 docker_images:
+  - compmodels/backup
   - compmodels/cull
   - compmodels/stats
   - compmodels/formgrader
