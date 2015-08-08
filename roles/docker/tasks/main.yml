@@ -80,12 +80,8 @@
 - name: remove docker containers
   shell: docker rm -v $(docker ps -a -q) || true
 
-- name: turn off docker cleanup cronjob
-  cron: name="docker cleanup" state=absent
-
-- name: pull docker images
-  command: docker pull {{ item }}
-  with_items: docker_images
-
 - name: run docker cleanup cronjob
   cron: name="docker cleanup" minute=15 user="root" job="/usr/bin/docker rmi $(/usr/bin/docker images -q --filter 'dangling=true')"
+
+- name: install docker-compose
+  shell: curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose

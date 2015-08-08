@@ -1,0 +1,15 @@
+---
+- fail: msg="hub_base_url is not defined"
+  when: hub_base_url == ''
+- fail: msg="nbgrader_user is not defined"
+  when: nbgrader_user == ''
+- fail: msg="nbgrader_root is not defined"
+  when: nbgrader_root == ''
+- fail: msg="course_id is not defined"
+  when: course_id == ''
+
+- name: copy the grader list to the nbgrader root directory
+  template: src=graderlist.j2 dest=/home/{{ nbgrader_user }}/{{ nbgrader_root }}/graderlist
+
+- name: change ownership of the grader list
+  command: chown 2000:2000 /home/{{ nbgrader_user }}/{{ nbgrader_root }}/graderlist

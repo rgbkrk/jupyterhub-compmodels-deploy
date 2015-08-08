@@ -1,0 +1,30 @@
+---
+- fail: msg="configproxy_auth_token is not defined"
+  when: configproxy_auth_token == ''
+- fail: msg="cookie_secret is not defined"
+  when: cookie_secret == ''
+- fail: msg="oauth_client_id is not defined"
+  when: oauth_client_id == ''
+- fail: msg="oauth_client_secret is not defined"
+  when: oauth_client_secret == ''
+- fail: msg="oauth_callback_url is not defined"
+  when: oauth_callback_url == ''
+- fail: msg="oauth_hosted_domain is not defined"
+  when: oauth_hosted_domain == ''
+- fail: msg="admin list is empty"
+  when: jupyterhub_admins|length == 0
+
+#- name: iptables configuration
+#  command: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8000
+
+- name: create the jupyterhub_db directory
+  file: path=/srv/jupyterhub_db state=directory
+
+- name: create jupyterhub.sqlite
+  file: path=/srv/jupyterhub_db/jupyterhub.sqlite state=touch mode=0600
+
+- name: create the jupyterhub_users directory
+  file: path=/srv/jupyterhub_users state=directory
+
+- name: create the userlist
+  template: src=userlist.j2 dest=/srv/jupyterhub_users/userlist

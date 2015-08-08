@@ -1,0 +1,31 @@
+---
+- fail: msg="jupyterhub_admin_user is not defined"
+  when: jupyterhub_admin_user == ''
+
+- include: jupyterhub.yml
+- include: swarm.yml
+- include: backup.yml
+- include: stats.yml
+- include: formgrader.yml
+
+- name: install docker-compose.yml
+  template: src=docker-compose.yml dest=/root/docker-compose.yml
+
+- name: stop docker containers
+  command: docker-compose stop
+
+- name: remove docker containers
+  command: docker-compose rm -f
+
+- name: pull docker images
+  command: docker-compose pull
+
+- name: run jupyterhub
+  command: docker-compose up -d jupyterhub
+
+- name: get a jupyterhub api token
+  command: docker exec root_jupyterhub_1 jupyterhub token -f /srv/jupyterhub_config/jupyterhub_config.py {{ jupyterhub_admin_user }}
+  register: jpy_api_token
+
+- name: start remaining services
+  shell: JPY_API_TOKEN={{ jpy_api_token.stdout }} docker-compose up -d --no-recreate

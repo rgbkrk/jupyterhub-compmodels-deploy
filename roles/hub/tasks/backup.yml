@@ -1,0 +1,16 @@
+---
+- fail: msg="backup_source_directory is not defined"
+  when: backup_source_directory == ''
+- fail: msg="backup_container is not defined"
+  when: backup_container == ''
+- fail: msg="gpg_key is not defined"
+  when: gpg_key == ''
+- fail: msg="gpg_pass is not defined"
+  when: gpg_pass == ''
+- fail: msg="rackspace_username is not defined"
+  when: rackspace_username == ''
+- fail: msg="rackspace_api_key is not defined"
+  when: rackspace_api_key == ''
+
+- name: create the backup_cache directory
+  file: path=/srv/backup_cache state=directory
