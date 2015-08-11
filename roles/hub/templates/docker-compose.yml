@@ -23,7 +23,7 @@ jupyterhub:
       - /srv/jupyterhub_db:/srv/jupyterhub_db
       - /srv/jupyterhub_users:/srv/jupyterhub_users
       - "{{ docker_tls_path }}:{{ docker_tls_path }}"
-      - /home:/home
+      - /var/run/restuser.sock:/restuser.sock
     ports:
       - "{{ servicenet_ip }}:8000:8000"
       - "{{ servicenet_ip }}:8081:8081"
