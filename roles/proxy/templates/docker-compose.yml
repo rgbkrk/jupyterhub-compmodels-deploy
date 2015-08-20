@@ -1,0 +1,16 @@
+staticfiles:
+    build: /srv/systemuser
+    command: echo "#data-container-hack"
+    volumes:
+    - "{{ notebook_static_files }}"
+
+nginx:
+    build: /srv/nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "{{ ssl_key_path }}:{{ ssl_key_path }}:ro"
+      - "{{ ssl_cert_path }}:{{ ssl_cert_path }}:ro"
+    volumes_from:
+      - staticfiles

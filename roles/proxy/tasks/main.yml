@@ -1,34 +1,9 @@
 ---
-- name: stop and remove nginx container
-  docker:
-    docker_api_version: "{{ docker_api_version }}"
-    state: absent
-    image: compmodels/nginx
-    name: nginx
-  sudo: yes
-
-- name: stop and remove static files container
-  docker:
-    docker_api_version: "{{ docker_api_version }}"
-    state: absent
-    image: compmodels/systemuser
-    name: static-files
-  sudo: yes
-
-# Get static resources from the userland container
-- name: static files container
-  docker:
-    image: compmodels/systemuser
-    state: running
-    name: static-files
-    command: echo "#data-container-hack"
-    volumes:
-    - "{{ notebook_static_files }}"
+- name: clone the dockerfile git repository
+  git: repo=https://github.com/compmodels/systemuser.git dest=/srv/systemuser
 
 - name: configuration directories
-  file: state=directory dest={{ item }} mode=0755
-  with_items:
-  - "{{ nginx_config_dir }}"
+  file: state=directory dest=/srv/nginx mode=0755
 
 - name: SSL credentials
   template: src={{ item.from }} dest={{ item.to }} mode=0644
@@ -39,24 +14,25 @@
     to: "{{ ssl_cert_path }}"
 
 - name: nginx configuration
-  template: src=nginx.conf.j2 dest={{ nginx_config_dir }}/nginx.conf mode=0644
+  template: src=nginx.conf.j2 dest=/srv/nginx/nginx.conf mode=0644
 
 - name: copy the Dockerfile to the nginx configuration directory
-  template: src=Dockerfile.j2 dest={{ nginx_config_dir }}/Dockerfile mode=0644
+  template: src=Dockerfile.j2 dest=/srv/nginx/Dockerfile mode=0644
 
-- name: build tmpnb nginx image
-  docker_image:
-    path: "{{ nginx_config_dir }}"
-    name: compmodels/nginx
-    state: build
+- name: install docker-compose.yml
+  template: src=docker-compose.yml dest=/root/docker-compose.yml
 
-- name: launch nginx
-  docker:
-    docker_api_version: "{{ docker_api_version }}"
-    image: compmodels/nginx
-    state: running
-    name: nginx
-    volumes: "{{ nginx_volumes }}"
-    ports: "{{ nginx_ports }}"
-    volumes_from:
-    - static-files
+- name: stop docker containers
+  command: docker-compose stop
+
+- name: remove docker containers
+  command: docker-compose rm -f
+
+- name: pull docker images
+  command: docker-compose pull
+
+- name: build docker images
+  command: docker-compose build
+
+- name: start services
+  command: docker-compose up -d

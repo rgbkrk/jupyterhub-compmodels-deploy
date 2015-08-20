@@ -9,21 +9,5 @@ ssl_key_path: ''
 ssl_cert: ''
 ssl_key: ''
 
-# This is where the nginx configuration should live
-nginx_config_dir: /srv/nginx
-
-# These are the volumes that the nginx container should mount
-nginx_volumes:
-    - "{{ ssl_key_path }}:{{ ssl_key_path }}:ro"
-    - "{{ ssl_cert_path }}:{{ ssl_cert_path }}:ro"
-
-# These are the ports that the nginx container should expose
-nginx_ports:
-    - 80:80
-    - 443:443
-
 # This is the path to the static files for the singleuser notebook server
 notebook_static_files: /srv/ipython/IPython/html/static/
-
-# Needed to make sure the API version matches with docker-py
-docker_api_version: 1.16
