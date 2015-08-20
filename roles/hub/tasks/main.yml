@@ -5,6 +5,7 @@
 - include: jupyterhub.yml
 - include: swarm.yml
 - include: backup.yml
+- include: cull.yml
 - include: stats.yml
 - include: formgrader.yml
 
@@ -17,8 +18,11 @@
 - name: remove docker containers
   command: docker-compose rm -f
 
-# - name: pull docker images
-#   command: docker-compose pull
+- name: pull docker images
+  command: docker-compose pull
+
+- name: build docker images
+  command: docker-compose build
 
 - name: run jupyterhub
   command: docker-compose up -d jupyterhub

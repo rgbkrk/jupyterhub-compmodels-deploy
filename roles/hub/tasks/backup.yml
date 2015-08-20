@@ -12,5 +12,8 @@
 - fail: msg="rackspace_api_key is not defined"
   when: rackspace_api_key == ''
 
+- name: clone the dockerfile git repository
+  git: repo=https://github.com/compmodels/backup.git dest=/srv/backup
+
 - name: create the backup_cache directory
   file: path=/srv/backup_cache state=directory

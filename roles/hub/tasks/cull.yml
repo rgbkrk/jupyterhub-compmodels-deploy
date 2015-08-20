@@ -1,0 +1,3 @@
+---
+- name: clone the dockerfile git repository
+  git: repo=https://github.com/compmodels/cull.git dest=/srv/cull

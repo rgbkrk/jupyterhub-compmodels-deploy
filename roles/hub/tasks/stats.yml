@@ -1,3 +1,6 @@
 ---
+- name: clone the dockerfile git repository
+  git: repo=https://github.com/compmodels/stats.git dest=/srv/stats
+
 - name: create the /srv/stats_db directory
   file: path=/srv/stats_db state=directory

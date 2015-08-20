@@ -8,7 +8,7 @@ swarm:
       - "127.0.0.1:2375:2375"
 
 jupyterhub:
-    image: compmodels/jupyterhub
+    build: /srv/jupyterhub
     environment:
       OAUTH_CLIENT_ID: "{{ oauth_client_id }}"
       OAUTH_CLIENT_SECRET: "{{ oauth_client_secret }}"
@@ -31,7 +31,7 @@ jupyterhub:
       - swarm
 
 backup:
-    image: compmodels/backup
+    build: /srv/backup
     hostname: "{{ ansible_hostname }}"
     command: --gpg-key={{ gpg_key }} {{ backup_source_directory }} cf+http://{{ backup_container }}
     environment:
@@ -44,7 +44,7 @@ backup:
       - "{{ backup_source_directory }}:{{ backup_source_directory }}"
 
 cull:
-    image: compmodels/cull
+    build: /srv/cull
     command: --timeout=86400 --cull_every=3600 --url=http://jupyterhub:8081/hub
     environment:
       JPY_API_TOKEN:
@@ -52,7 +52,7 @@ cull:
       - jupyterhub
 
 formgrader:
-    image: compmodels/formgrader
+    build: /srv/formgrader
     environment:
       CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
       NOTEBOOK_URL_PREFIX: "{{ nbgrader_root }}"
@@ -67,7 +67,7 @@ formgrader:
       - "{{ servicenet_ip }}:9000:9000"
 
 stats:
-    image: compmodels/stats
+    build: /srv/stats
     command: --file=/srv/stats_db/activity.sqlite --hub=http://jupyterhub:8081
     environment:
       JPY_API_TOKEN:
