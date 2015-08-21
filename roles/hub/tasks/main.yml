@@ -32,4 +32,4 @@
   register: jpy_api_token
 
 - name: start remaining services
-  shell: JPY_API_TOKEN={{ jpy_api_token.stdout }} docker-compose up -d --no-recreate
+  shell: JPY_API_TOKEN={{ jpy_api_token.stdout }} NBGRADER_USER_ID={{ nbgrader_user_id.stdout }} docker-compose up -d --no-recreate

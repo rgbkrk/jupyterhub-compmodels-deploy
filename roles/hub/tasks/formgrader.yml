@@ -10,3 +10,7 @@
 
 - name: clone the dockerfile git repository
   git: repo=https://github.com/compmodels/formgrader.git dest=/srv/formgrader
+
+- name: get the user id of the nbgrader user
+  script: get_user_id.sh {{ nbgrader_user }}
+  register: nbgrader_user_id

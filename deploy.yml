@@ -1,37 +1,38 @@
 ---
-# - hosts:
-#   - proxy
-#   - jupyterhub_host
-#   - jupyterhub_nodes
-#   vars_files:
-#   - 'secrets.vault.yml'
-#   - 'vars.yml'
-#   roles:
-#   - common
-#   - rackspace
-#   - docker
+- hosts:
+  - proxy
+  - jupyterhub_host
+  - jupyterhub_nodes
+  vars_files:
+  - 'secrets.vault.yml'
+  - 'vars.yml'
+  roles:
+  - common
+  - rackspace
+  - docker
 
-# - hosts: proxy
-#   vars_files:
-#   - 'secrets.vault.yml'
-#   - 'vars.yml'
-#   roles:
-#   - proxy
+- hosts: proxy
+  vars_files:
+  - 'secrets.vault.yml'
+  - 'vars.yml'
+  roles:
+  - proxy
 
-# - hosts:
-#   - jupyterhub_host
-#   vars_files:
-#   - 'secrets.vault.yml'
-#   - 'vars.yml'
-#   roles:
-#   - nfs_server
+- hosts:
+  - jupyterhub_host
+  vars_files:
+  - 'secrets.vault.yml'
+  - 'vars.yml'
+  roles:
+  - nfs_server
 
-# - hosts: jupyterhub_nodes
-#   vars_files:
-#   - 'secrets.vault.yml'
-#   - 'vars.yml'
-#   roles:
-#   - nfs_client
+- hosts: jupyterhub_nodes
+  vars_files:
+  - 'secrets.vault.yml'
+  - 'vars.yml'
+  roles:
+  - nfs_client
+  - node
 
 - hosts: jupyterhub_host
   vars_files:
@@ -39,5 +40,5 @@
   - 'users.vault.yml'
   - 'vars.yml'
   roles:
-  #- restuser
+  - restuser
   - hub

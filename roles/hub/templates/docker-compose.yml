@@ -51,6 +51,14 @@ cull:
     links:
       - jupyterhub
 
+postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: gradebook
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    ports:
+      - "{{ ansible_ssh_host }}:5432:5432"
+
 formgrader:
     build: /srv/formgrader
     environment:
@@ -58,11 +66,18 @@ formgrader:
       NOTEBOOK_URL_PREFIX: "{{ nbgrader_root }}"
       HUB_BASE_URL: "{{ hub_base_url }}"
       FORMGRADER_IP: "{{ servicenet_ip }}"
+      ASSIGNMENTS_REPO_NAME: "{{ assignments_repo_name }}"
+      ASSIGNMENTS_REPO_CLONE_URL: "{{ assignments_repo_clone_url }}"
+      ASSIGNMENTS_REPO_URL: "{{ assignments_repo_url }} "
+      NBGRADER_DB_URL: "postgresql://postgres:{{ postgres_password }}@{{ ansible_ssh_host }}:5432/gradebook"
+      NBGRADER_USER: "{{ nbgrader_user }}"
+      NBGRADER_USER_ID:
       JPY_API_TOKEN:
     volumes:
-      - /home/{{ nbgrader_user }}/{{ nbgrader_root }}:/srv/formgrader
+      - /home/{{ nbgrader_user }}:/home/{{ nbgrader_user }}
     links:
       - jupyterhub
+      - postgres
     ports:
       - "{{ servicenet_ip }}:9000:9000"
 
