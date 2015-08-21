@@ -27,6 +27,13 @@
 - name: run jupyterhub
   command: docker-compose up -d jupyterhub
 
+- name: wait for jupyterhub to start
+  command: docker logs root_jupyterhub_1
+  register: jpy_status
+  until: jpy_status.stderr.find("JupyterHub is now running") != -1
+  retries: 5
+  delay: 5
+
 - name: get a jupyterhub api token
   command: docker exec root_jupyterhub_1 jupyterhub token -f /srv/jupyterhub_config/jupyterhub_config.py {{ jupyterhub_admin_user }}
   register: jpy_api_token
