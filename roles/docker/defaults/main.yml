@@ -1,7 +1,4 @@
 ---
-# This is a list of docker images that should be pulled
-docker_images: []
-
 # This is where the TLS certificates and keys should be stored for Docker
 docker_tls_path: /root/.docker
 
