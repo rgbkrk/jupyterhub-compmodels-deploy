@@ -7,14 +7,6 @@
 - name: install nfs packages
   apt: update_cache=yes cache_valid_time=600 name=nfs-kernel-server,nfs-common state=latest
 
-# - name: install mdadm
-#   apt: update_cache=yes cache_valid_time=600 name=mdadm state=latest
-#   when: not test
-
-# - name: run the lsi-cards script
-#   script: lsi-cards {{ ansible_fqdn }} /var/lib/docker creates=/etc/{{ ansible_fqdn }}.raid-setup
-#   when: not test
-
 - name: stop nfs
   service: name=nfs-kernel-server state=stopped
 
@@ -31,19 +23,7 @@
   file: path={{ nfspath }}/home state=directory
 
 - name: create sub directory for nbgrader volume
-  file: path={{ nfspath }}/nbgrader state=directory mode=777
-
-- name: create home directory
-  file: path=/home state=directory
-
-- name: create nbgrader directory
-  file: path=/srv/nbgrader state=directory
-
-- name: mount home
-  shell: mount --bind /home {{ nfspath }}/home
-
-- name: mount nbgrader
-  shell: mount --bind /srv/nbgrader {{ nfspath }}/nbgrader
+  file: path={{ nfspath }}/nbgrader state=directory mode=0777
 
 - name: install /etc/exports
   template: src=exports dest=/etc/exports mode=0644

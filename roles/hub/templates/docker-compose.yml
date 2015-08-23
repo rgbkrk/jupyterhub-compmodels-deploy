@@ -34,6 +34,7 @@ jupyterhub:
       DOCKER_TLS_CERT: "{{ docker_tls_path }}/cert.pem"
       DOCKER_TLS_KEY: "{{ docker_tls_path }}/key.pem"
       HUB_IP: "{{ servicenet_ip }}"
+      NBGRADER_EXCHANGE: "{{ exchange }}"
     volumes:
       - /srv/jupyterhub_users:/srv/jupyterhub_users
       - "{{ docker_tls_path }}:{{ docker_tls_path }}"
@@ -44,20 +45,6 @@ jupyterhub:
     links:
       - swarm
       - jpydb:postgres
-
-backup:
-    build: /srv/backup
-    restart: always
-    hostname: "{{ ansible_hostname }}"
-    command: --gpg-key={{ gpg_key }} {{ backup_source_directory }} cf+http://{{ backup_container }}
-    environment:
-      CLOUDFILES_USERNAME: "{{ rackspace_username }}"
-      CLOUDFILES_APIKEY: "{{ rackspace_api_key }}"
-      PASSPHRASE: "{{ gpg_pass }}"
-    volumes:
-      - /root/.gnupg:/root/.gnupg
-      - /srv/backup_cache:/root/.cache/duplicity
-      - "{{ backup_source_directory }}:{{ backup_source_directory }}"
 
 cull:
     build: /srv/cull

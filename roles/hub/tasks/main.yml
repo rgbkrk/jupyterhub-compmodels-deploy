@@ -4,7 +4,6 @@
 
 - include: jupyterhub.yml
 - include: swarm.yml
-- include: backup.yml
 - include: cull.yml
 - include: stats.yml
 - include: formgrader.yml

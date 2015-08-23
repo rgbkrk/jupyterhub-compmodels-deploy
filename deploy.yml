@@ -19,7 +19,7 @@
   - proxy
 
 - hosts:
-  - jupyterhub_host
+  - jupyterhub_nfs
   vars_files:
   - 'secrets.vault.yml'
   - 'vars.yml'
@@ -40,5 +40,6 @@
   - 'users.vault.yml'
   - 'vars.yml'
   roles:
+  - nfs_client
   - restuser
   - hub
