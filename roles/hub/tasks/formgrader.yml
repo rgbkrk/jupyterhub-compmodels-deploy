@@ -14,3 +14,6 @@
 - name: get the user id of the nbgrader user
   script: get_user_id.sh {{ nbgrader_user }}
   register: nbgrader_user_id
+
+- name: install bashrc for the nbgrader user
+  template: src=bashrc.j2 dest=/home/{{ nbgrader_user }}/.bashrc
