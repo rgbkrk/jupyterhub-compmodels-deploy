@@ -18,7 +18,7 @@ touch certificates/password
 chmod 600 certificates/password
 cat /dev/random | head -c 128 | base64 > certificates/password
 
-KEYMASTER="keymaster="docker run --rm -v $(pwd)/certificates/:/certificates/ cloudpipe/keymaster"
+KEYMASTER="docker run --rm -v $(pwd)/certificates/:/certificates/ cloudpipe/keymaster"
 
 ${KEYMASTER} ca
 ```
@@ -51,7 +51,7 @@ You will also need to save host-specific variables (such as certificates) into t
 
 ## Users
 
-For the whitelist of users, you need to copy `users.vault.yml.example` to `users.vault.yml` and edit it to include your list of students and instructors. The instructors will have admin access to JupyterHub. Once you are done editing it, you should encrypt it using Ansible vault:
+For the whitelist of users, you need to copy `users.vault.yml.example` to `users.vault.yml` and edit it to include your list of admins and users. Once you are done editing it, you should encrypt it using Ansible vault:
 
 ```
 ansible-vault encrypt --vault-password-file vault-password users.vault.yml

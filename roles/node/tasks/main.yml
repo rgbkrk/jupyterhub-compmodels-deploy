@@ -1,0 +1,6 @@
+---
+- name: clone the dockerfile git repository
+  git: repo=https://github.com/compmodels/systemuser.git dest=/srv/systemuser
+
+- name: build the docker image
+  shell: docker build -t compmodels/systemuser /srv/systemuser

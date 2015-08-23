@@ -6,4 +6,3 @@
 
 - name: install rackspace monitoring agent
   script: monitoring.sh {{ rackspace_username }} {{ rackspace_api_key }}
-  sudo: yes

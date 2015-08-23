@@ -1,0 +1,19 @@
+---
+- fail: msg="hub_base_url is not defined"
+  when: hub_base_url == ''
+- fail: msg="nbgrader_user is not defined"
+  when: nbgrader_user == ''
+- fail: msg="nbgrader_root is not defined"
+  when: nbgrader_root == ''
+- fail: msg="course_id is not defined"
+  when: course_id == ''
+
+- name: clone the dockerfile git repository
+  git: repo=https://github.com/compmodels/formgrader.git dest=/srv/formgrader
+
+- name: get the user id of the nbgrader user
+  script: get_user_id.sh {{ nbgrader_user }}
+  register: nbgrader_user_id
+
+- name: install bashrc for the nbgrader user
+  template: src=bashrc.j2 dest=/home/{{ nbgrader_user }}/.bashrc

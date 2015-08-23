@@ -12,18 +12,15 @@
     regexp: GRUB_CMDLINE_LINUX=.*
     line: GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"
   register: grubbed
-  sudo: yes
 
 - name: apply changed grub settings
   command: update-grub
-  sudo: yes
   when: grubbed | changed
 
 - name: reboot
   command: shutdown -r now "Ansible updated grub"
   async: 0
   poll: 0
-  sudo: yes
   ignore_errors: true
   when: grubbed | changed
 
@@ -37,7 +34,6 @@
 
 - name: ensure HTTPS transport is available to apt
   apt: update_cache=yes cache_valid_time=600 name=apt-transport-https
-  sudo: yes
   when: not https_transport_file.stat.exists
 
 - name: ensure the docker apt key is trusted
@@ -45,25 +41,20 @@
     keyserver: hkp://keyserver.ubuntu.com:80
     id: 36A1D7869245C8950F966E92D8576A8BA88D21E9
     state: present
-  sudo: yes
 
 - name: ensure the docker apt repository is present
   apt_repository:
     repo: deb https://get.docker.com/ubuntu docker main
     state: present
-  sudo: yes
 
 - name: install docker
   apt: update_cache=yes name=lxc-docker
-  sudo: yes
 
 - name: install docker configuration
   template: src=docker_config dest=/etc/default/docker mode=0644
-  sudo: yes
 
 - name: create docker TLS directory
   file: path={{ docker_tls_path }} state=directory
-  sudo: yes
   when: docker_client_tls or docker_server_tls
 
 - name: install docker TLS credentials
@@ -79,33 +70,18 @@
 
 - name: restart docker
   shell: service docker restart
-  sudo: yes
 
 - name: docker-py
   pip: name=docker-py state=present version=1.1.0
-  sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: stop running docker containers
   shell: docker stop $(docker ps -a -q) || true
-  tags:
-    - docker-rebuild
 
 - name: remove docker containers
   shell: docker rm -v $(docker ps -a -q) || true
-  tags:
-    - docker-rebuild
-
-- name: turn off docker cleanup cronjob
-  cron: name="docker cleanup" state=absent
-
-- name: pull docker images
-  command: docker pull {{ item }}
-  with_items: docker_images
-  sudo: yes
-  tags:
-    - docker-rebuild
 
 - name: run docker cleanup cronjob
   cron: name="docker cleanup" minute=15 user="root" job="/usr/bin/docker rmi $(/usr/bin/docker images -q --filter 'dangling=true')"
+
+- name: install docker-compose
+  shell: curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose

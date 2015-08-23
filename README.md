@@ -58,12 +58,12 @@ Logs for NFS don't have their own log file; they can be found just in `/var/log/
 
 The JupyterHub setup itself is actually pretty straightforward.
 JupyterHub runs in a docker container from the image `compmodels/jupyterhub`, which is built from `jupyter/jupyterhub`.
-The differences are that our version of JupyterHub uses a special blend of GitHub authentication with local system users and spawns user servers inside docker containers on the node servers using a spawner based on the [system user docker spawner](https://github.com/jupyter/dockerspawner).
+The differences are that our version of JupyterHub uses a special blend of Google authentication with local system users and spawns user servers inside docker containers on the node servers using a spawner based on the [system user docker spawner](https://github.com/jupyter/dockerspawner).
 What this basically means is:
 
-1. Users are created on the hub server with a username that needs to be the same as their GitHub username.
+1. Users are created on the hub server with a username that needs to be the same as their Google username.
 2. In addition to their username, JupyterHub stores the pid of each user.
-3. When they login, JupyterHub authenticates the users with GitHub.
+3. When they login, JupyterHub authenticates the users with Google.
 4. Once authenticated, JupyterHub spawns a docker container on one of the node servers and mounts the user's home directory inside the container.
 5. A user is created inside the docker container with the appropriate username and pid, so that they have access to the files in their home directory.
 
@@ -132,33 +132,3 @@ this when people might be using the hub!
 If you need to run a particular subset of the deploy operations, you can pass a `-t` flag to specify a "tag".
 For example, to do all tasks relating to the statistics service, you would run `./script deploy -t stats`.
 These tags are defined in the tasks themselves, for example if you look at `roles/jupyterhub_host/tasks/stats.yml` you'll see that the tasks all have a "stats" tag as well as a "rebuild-tag".
-
-## Releasing assignments
-
-To release an assignment:
-
-```
-./script/release
-```
-
-This will prompt you for the name of the assignment. You'll need to have also
-specified the path to the assignments in `vars.local.yml` (if that file does not
-exist, copy `vars.yml` and then edit it).
-
-Also, note that if the assignment folder already exists in the user's home
-directory, then it will NOT be overridden by default.
-
-## Collecting assignments
-
-To collect assignments:
-
-```
-./script/download
-```
-
-This will prompt you for the name of the assignment to download.
-You'll need to have also specified the path to the assignments in `vars.local.yml` (if that file does not exist, copy `vars.yml` and edit it).
-
-## Returning assignments
-
-Coming soon!

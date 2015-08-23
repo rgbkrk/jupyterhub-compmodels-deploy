@@ -1,0 +1,6 @@
+---
+- name: create the /root/.swarm directory
+  file: path=/root/.swarm state=directory
+
+- name: create the cluster list
+  template: src=cluster.j2 dest=/root/.swarm/cluster

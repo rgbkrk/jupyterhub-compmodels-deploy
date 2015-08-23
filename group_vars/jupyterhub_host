@@ -1,6 +1,11 @@
 ---
 docker_images:
-  - jupyter/jupyterhub
+  - compmodels/backup
+  - compmodels/cull
+  - compmodels/stats
+  - compmodels/formgrader
+  - compmodels/jupyterhub
+  - dockerswarm/swarm:0.3.0
 
 docker_server_tls: no
 docker_client_tls: yes

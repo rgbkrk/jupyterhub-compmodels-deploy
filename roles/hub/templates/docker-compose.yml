@@ -1,0 +1,115 @@
+swarm:
+    image: dockerswarm/swarm
+    restart: always
+    command: manage --strategy={{ docker_swarm_strategy }} --tlsverify --tlscacert={{ docker_tls_path }}/ca.pem --tlscert={{ docker_tls_path }}/cert.pem --tlskey={{ docker_tls_path }}/key.pem file:///root/.swarm/cluster
+    volumes:
+      - /root/.swarm:/root/.swarm
+      - "{{ docker_tls_path }}:{{ docker_tls_path }}"
+    ports:
+      - "127.0.0.1:2375:2375"
+
+jpydb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: jupyterhub
+      POSTGRES_PASSWORD: "{{ jpy_postgres_password }}"
+      PGDATA: /var/lib/postgresql/data/jupyterhub
+    volumes:
+      - /srv/postgres/jupyterhub:/var/lib/postgresql/data/jupyterhub
+
+jupyterhub:
+    build: /srv/jupyterhub
+    restart: always
+    environment:
+      OAUTH_CLIENT_ID: "{{ oauth_client_id }}"
+      OAUTH_CLIENT_SECRET: "{{ oauth_client_secret }}"
+      OAUTH_CALLBACK_URL: "{{ oauth_callback_url }}"
+      HOSTED_DOMAIN: "{{ oauth_hosted_domain }}"
+      JPY_COOKIE_SECRET: "{{ cookie_secret }}"
+      JPY_DB_USER: postgres
+      JPY_DB_PASSWORD: "{{ jpy_postgres_password }}"
+      JPY_DB_NAME: jupyterhub
+      CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
+      DOCKER_TLS_CERT: "{{ docker_tls_path }}/cert.pem"
+      DOCKER_TLS_KEY: "{{ docker_tls_path }}/key.pem"
+      HUB_IP: "{{ servicenet_ip }}"
+    volumes:
+      - /srv/jupyterhub_users:/srv/jupyterhub_users
+      - "{{ docker_tls_path }}:{{ docker_tls_path }}"
+      - /var/run/restuser.sock:/restuser.sock
+    ports:
+      - "{{ servicenet_ip }}:8000:8000"
+      - "{{ servicenet_ip }}:8081:8081"
+    links:
+      - swarm
+      - jpydb:postgres
+
+backup:
+    build: /srv/backup
+    restart: always
+    hostname: "{{ ansible_hostname }}"
+    command: --gpg-key={{ gpg_key }} {{ backup_source_directory }} cf+http://{{ backup_container }}
+    environment:
+      CLOUDFILES_USERNAME: "{{ rackspace_username }}"
+      CLOUDFILES_APIKEY: "{{ rackspace_api_key }}"
+      PASSPHRASE: "{{ gpg_pass }}"
+    volumes:
+      - /root/.gnupg:/root/.gnupg
+      - /srv/backup_cache:/root/.cache/duplicity
+      - "{{ backup_source_directory }}:{{ backup_source_directory }}"
+
+cull:
+    build: /srv/cull
+    restart: always
+    command: --timeout=86400 --cull_every=3600 --url=http://jupyterhub:8081/hub
+    environment:
+      JPY_API_TOKEN:
+    links:
+      - jupyterhub
+
+gradebook:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: gradebook
+      POSTGRES_PASSWORD: "{{ gradebook_postgres_password }}"
+      PGDATA: /var/lib/postgresql/data/gradebook
+    volumes:
+      - /srv/postgres/gradebook:/var/lib/postgresql/data/gradebook
+    ports:
+      - "{{ ansible_ssh_host }}:5432:5432"
+
+formgrader:
+    build: /srv/formgrader
+    restart: always
+    environment:
+      CONFIGPROXY_AUTH_TOKEN: "{{ configproxy_auth_token }}"
+      NOTEBOOK_URL_PREFIX: "{{ nbgrader_root }}"
+      HUB_BASE_URL: "{{ hub_base_url }}"
+      FORMGRADER_IP: "{{ servicenet_ip }}"
+      ASSIGNMENTS_REPO_NAME: "{{ assignments_repo_name }}"
+      ASSIGNMENTS_REPO_CLONE_URL: "{{ assignments_repo_clone_url }}"
+      ASSIGNMENTS_REPO_URL: "{{ assignments_repo_url }}"
+      NBGRADER_DB_URL: "postgresql://postgres:{{ gradebook_postgres_password }}@{{ ansible_ssh_host }}:5432/gradebook"
+      NBGRADER_USER: "{{ nbgrader_user }}"
+      NBGRADER_USER_ID:
+      JPY_API_TOKEN:
+    volumes:
+      - /home/{{ nbgrader_user }}:/home/{{ nbgrader_user }}
+    links:
+      - jupyterhub
+      - gradebook:postgres
+    ports:
+      - "{{ servicenet_ip }}:9000:9000"
+
+stats:
+    build: /srv/stats
+    restart: always
+    command: --file=/srv/stats_db/activity.sqlite --hub=http://jupyterhub:8081
+    environment:
+      JPY_API_TOKEN:
+    volumes:
+      - /srv/stats_db:/srv/stats_db
+    links:
+      - jupyterhub

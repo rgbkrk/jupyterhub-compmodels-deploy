@@ -25,7 +25,6 @@
   - 'vars.yml'
   roles:
   - nfs_server
-  - backup
 
 - hosts: jupyterhub_nodes
   vars_files:
@@ -33,7 +32,7 @@
   - 'vars.yml'
   roles:
   - nfs_client
-  - singleuser
+  - node
 
 - hosts: jupyterhub_host
   vars_files:
@@ -42,7 +41,4 @@
   - 'vars.yml'
   roles:
   - restuser
-  - swarm
-  - jupyterhub
-  - cull
-  - stats
+  - hub
