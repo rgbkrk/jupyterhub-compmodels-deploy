@@ -6,7 +6,6 @@
   - jupyterhub_nodes
   vars_files:
   - 'secrets.vault.yml'
-  - 'vars.yml'
   roles:
   - common
   - rackspace
@@ -17,35 +16,30 @@
   - jupyterhub_nodes
   vars_files:
   - 'secrets.vault.yml'
-  - 'vars.yml'
   roles:
   - docker
 
 - hosts: proxy
   vars_files:
   - 'secrets.vault.yml'
-  - 'vars.yml'
   roles:
   - proxy
 
 - hosts: jupyterhub_nfs
   vars_files:
   - 'secrets.vault.yml'
-  - 'vars.yml'
   roles:
   - nfs_server
 
 - hosts: nfs_clients
   vars_files:
   - 'secrets.vault.yml'
-  - 'vars.yml'
   roles:
   - nfs_client
 
 - hosts: jupyterhub_nodes
   vars_files:
   - 'secrets.vault.yml'
-  - 'vars.yml'
   roles:
   - node
 
@@ -53,7 +47,6 @@
   vars_files:
   - 'secrets.vault.yml'
   - 'users.vault.yml'
-  - 'vars.yml'
   roles:
   - restuser
   - hub

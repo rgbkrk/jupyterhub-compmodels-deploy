@@ -1,5 +1,0 @@
----
-# Override these values by copying to vars.yml.
-
-# Are we testing?
-test: no
