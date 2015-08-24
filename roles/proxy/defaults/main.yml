@@ -10,4 +10,4 @@ ssl_cert: ''
 ssl_key: ''
 
 # This is the path to the static files for the singleuser notebook server
-notebook_static_files: /srv/ipython/IPython/html/static/
+notebook_static_files: /usr/local/lib/python3.4/dist-packages/notebook/static/
