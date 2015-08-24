@@ -3,3 +3,6 @@
 # be overwritten in an encrypted vault file.
 rackspace_username: ''
 rackspace_api_key: ''
+
+# Default is to not backup, but this can be overwritten.
+rackspace_backup: no

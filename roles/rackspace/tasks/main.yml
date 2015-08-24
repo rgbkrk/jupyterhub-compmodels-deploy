@@ -6,3 +6,7 @@
 
 - name: install rackspace monitoring agent
   script: monitoring.sh {{ rackspace_username }} {{ rackspace_api_key }}
+
+- name: install rackspace backup agent
+  script: backup.sh {{ rackspace_username }} {{ rackspace_api_key }}
+  when: rackspace_backup
