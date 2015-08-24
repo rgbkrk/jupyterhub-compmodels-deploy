@@ -14,7 +14,13 @@
   shell: umount {{ nfspath }}/{{ item }} || true
   with_items:
     - home
-    - nbgrader
+    - exchange
+
+- name: make sure home directory exists
+  file: path=/mnt/nfs/home state=directory
+
+- name: make sure exchange directory exists
+  file: path=/mnt/nfs/exchange state=directory mode=0777
 
 - name: create root directory for NFS volume
   file: path={{ nfspath }} state=directory
@@ -22,20 +28,30 @@
 - name: create sub directory for home volume
   file: path={{ nfspath }}/home state=directory
 
-- name: create sub directory for nbgrader volume
-  file: path={{ nfspath }}/nbgrader state=directory mode=0777
+- name: create sub directory for exchange volume
+  file: path={{ nfspath }}/exchange state=directory mode=0777
+
+- name: bind home volume
+  mount: src=/mnt/nfs/home name={{ nfspath }}/home fstype=none opts=bind state=mounted
+
+- name: bind exchange volume
+  mount: src=/mnt/nfs/exchange name={{ nfspath }}/exchange fstype=none opts=bind state=mounted
+
+- name: modify ufw settings
+  shell: "ufw allow from {{ hostvars[item]['servicenet_ip'] }}"
+  with_items: "{{ groups['nfs_clients'] }}"
+
+- name: modify /etc/hosts.allow
+  lineinfile:
+    dest: /etc/hosts.allow
+    line: "PORTMAP: {{ hostvars[item]['servicenet_ip'] }}"
+  with_items: "{{ groups['nfs_clients'] }}"
 
 - name: install /etc/exports
   template: src=exports dest=/etc/exports mode=0644
-
-- name: tweak idmapd settings
-  lineinfile:
-    dest: /etc/idmapd.conf
-    regexp: '(# )?Domain =.*'
-    line: 'Domain = {{ nfsdomain }}'
 
 - name: start nfs
   service: name=nfs-kernel-server state=started
 
 - name: restart idmapd
-  service: name=idmapd state=restarted
+  service: name=nfs-idmapd state=restarted

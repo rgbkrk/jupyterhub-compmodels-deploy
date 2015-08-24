@@ -10,20 +10,11 @@
 - name: unmount home
   shell: umount /home || true
 
-- name: unmount nbgrader
+- name: unmount exchange
   shell: umount {{ exchange }} || true
 
 - name: mount home
-  mount: name=/home src={{ hostvars[nfsserver]['ansible_ssh_host'] }}:/home fstype=nfs opts={{ nfsoptions }} state=mounted
+  mount: name=/home src={{ hostvars[nfsserver]['servicenet_ip'] }}:/home fstype=nfs opts={{ nfsoptions }} state=mounted
 
-- name: mount nbgrader
-  mount: name={{ exchange }} src={{ hostvars[nfsserver]['ansible_ssh_host'] }}:/nbgrader fstype=nfs opts={{ nfsoptions }} state=mounted
-
-- name: tweak idmapd settings
-  lineinfile:
-    dest: /etc/idmapd.conf
-    regexp: '(# )?Domain =.*'
-    line: 'Domain = {{ nfsdomain }}'
-
-- name: restart idmapd
-  service: name=idmapd state=restarted
+- name: mount exchange
+  mount: name={{ exchange }} src={{ hostvars[nfsserver]['servicenet_ip'] }}:/exchange fstype=nfs opts={{ nfsoptions }} state=mounted

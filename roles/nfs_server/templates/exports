@@ -1,5 +1,5 @@
-{% for host in groups['jupyterhub_nodes'] %}
-{{ nfspath }}      {{ hostvars[host]['fqdn'] }}(rw,fsid=0,no_subtree_check,sync)
-{{ nfspath }}/home {{ hostvars[host]['fqdn'] }}(rw,nohide,insecure,no_subtree_check,async)
-{{ nfspath }}/nbgrader {{ hostvars[host]['fqdn'] }}(rw,nohide,insecure,no_subtree_check,async)
+{% for host in groups['nfs_clients'] %}
+{{ nfspath }}      {{ hostvars[host]['servicenet_ip'] }}(rw,fsid=0,no_root_squash,no_subtree_check,sync)
+{{ nfspath }}/home {{ hostvars[host]['servicenet_ip'] }}(rw,no_root_squash,no_subtree_check,sync)
+{{ nfspath }}/exchange {{ hostvars[host]['servicenet_ip'] }}(rw,no_root_squash,no_subtree_check,sync)
 {% endfor %}

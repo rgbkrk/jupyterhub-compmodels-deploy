@@ -5,4 +5,4 @@ nfsserver: ''
 # Domain for idmapd
 nfsdomain: ''
 # Options to mount NFS with
-nfsoptions: rw
+nfsoptions: rw,_netdev,auto

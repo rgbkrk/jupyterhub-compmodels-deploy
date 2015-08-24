@@ -1,6 +1,7 @@
 ---
 - hosts:
   - proxy
+  - jupyterhub_nfs
   - jupyterhub_host
   - jupyterhub_nodes
   vars_files:
@@ -18,20 +19,25 @@
   roles:
   - proxy
 
-- hosts:
-  - jupyterhub_nfs
+- hosts: jupyterhub_nfs
   vars_files:
   - 'secrets.vault.yml'
   - 'vars.yml'
   roles:
   - nfs_server
 
-- hosts: jupyterhub_nodes
+- hosts: nfs_clients
   vars_files:
   - 'secrets.vault.yml'
   - 'vars.yml'
   roles:
   - nfs_client
+
+- hosts: jupyterhub_nodes
+  vars_files:
+  - 'secrets.vault.yml'
+  - 'vars.yml'
+  roles:
   - node
 
 - hosts: jupyterhub_host
@@ -40,6 +46,5 @@
   - 'users.vault.yml'
   - 'vars.yml'
   roles:
-  - nfs_client
   - restuser
   - hub
