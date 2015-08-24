@@ -16,4 +16,10 @@
   register: nbgrader_user_id
 
 - name: install bashrc for the nbgrader user
-  template: src=bashrc.j2 dest=/home/{{ nbgrader_user }}/.bashrc
+  template: src=bashrc.j2 dest=/home/{{ nbgrader_user }}/.bashrc owner={{ nbgrader_user }} group={{ nbgrader_user }}
+
+- name: tweak ufw settings to allow connections to port 9000
+  shell: ufw allow from 172.17.0.0/16 to {{ servicenet_ip }} port 9000
+
+- name: tweak ufw settings to allow outgoing connections to port 5432
+  shell: ufw allow from 172.17.0.0/16 to {{ ansible_ssh_host }} port 5432

@@ -10,6 +10,15 @@
   roles:
   - common
   - rackspace
+
+- hosts:
+  - proxy
+  - jupyterhub_host
+  - jupyterhub_nodes
+  vars_files:
+  - 'secrets.vault.yml'
+  - 'vars.yml'
+  roles:
   - docker
 
 - hosts: proxy
