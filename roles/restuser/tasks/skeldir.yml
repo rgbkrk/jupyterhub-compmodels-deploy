@@ -1,0 +1,15 @@
+---
+- name: create /srv/skeldir
+  file: path=/srv/skeldir state=directory
+
+- name: create ~/.jupyter
+  file: path=/srv/skeldir/.jupyter state=directory
+
+- name: install jupyter_notebook_config.json
+  copy: src=jupyter_notebook_config.json dest=/srv/skeldir/.jupyter/jupyter_notebook_config.json
+
+- name: create ~/.jupyter/nbconfig
+  file: path=/srv/skeldir/.jupyter/nbconfig state=directory
+
+- name: install nbconfig/tree.json
+  copy: src=nbconfig_tree.json dest=/srv/skeldir/.jupyter/nbconfig/tree.json
