@@ -6,3 +6,5 @@ nfsserver: ''
 nfsdomain: ''
 # Options to mount NFS with
 nfsoptions: rw,_netdev,auto
+# Where the exchange directory should be mounted on the client
+exchange: ''

@@ -5,8 +5,6 @@
   when: nbgrader_user == ''
 - fail: msg="nbgrader_root is not defined"
   when: nbgrader_root == ''
-- fail: msg="course_id is not defined"
-  when: course_id == ''
 
 - name: clone the dockerfile git repository
   git: repo=https://github.com/compmodels/formgrader.git dest=/srv/formgrader

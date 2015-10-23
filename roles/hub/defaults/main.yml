@@ -2,35 +2,6 @@
 # Needed to make sure the API version matches with docker-py
 docker_api_version: 1.16
 
-# This is the name of an admin user of the JupyterHub instance, necessary
-# to get an API key from JupyterHub
-jupyterhub_admin_user: ''
-
-# This is the directory you actually want to back up
-backup_source_directory: ''
-
-# This is the name of the CloudFiles container where the backups will be stored
-backup_container: ''
-
-# This is the GPG key id and password for the Duplicity backups. In general you
-# should NEVER override this here -- override it in a vault file that is
-# encrypted.
-gpg_key: ''
-gpg_pass: ''
-
-# As with the GPG key, never actually include your Rackspace username and API
-# key here -- they should be overwritten in an encrypted vault file.
-rackspace_username: ''
-rackspace_api_key: ''
-
-# Root url of the hub
-hub_base_url: ''
-
-# User who will run nbgrader and root of the nbgrader directory structure
-# relative to that user's home directory
-nbgrader_user: ''
-nbgrader_root: ''
-
 # This is the auth token for JupyterHub. You can create it with:
 #     openssl rand -hex 16
 # Note that this should never be stored in plaintext; you should probably
@@ -49,6 +20,38 @@ oauth_client_id: ''
 oauth_client_secret: ''
 oauth_callback_url: ''
 oauth_hosted_domain: ''
+
+# This is the password for the 'postgres' user for the JupyterHub database (the
+# database name will be 'jupyterhub')
+jpy_postgres_password: ''
+
+# This is the name of an admin user of the JupyterHub instance, necessary
+# to get an API key from JupyterHub
+jupyterhub_admin_user: ''
+
+# Root url of the hub (e.g. 'https://compmodels.tmpnb.org/')
+hub_base_url: ''
+
+# User who will run nbgrader and path to the root of the nbgrader directory
+# structure relative to that user's home directory
+nbgrader_user: ''
+nbgrader_root: ''
+
+# The name of the repository containing the homework assignments, the public URL
+# for the repository, and a private URL from which to clone the repository.
+# These two URLs can be the same, but if you have a private repo then the clone
+# URL can take the form of
+# 'https://<username>:<access_token>@github.com/org/repo.git' rather than
+# 'https://github.com/org/repo.git'. The clone URL will be used to clone the
+# repo, but then the remote will be set to the public URL, so that your access
+# token isn't stored anywhere.
+assignments_repo_name: ''
+assignments_repo_url: ''
+assignments_repo_clone_url: ''
+
+# The password for the 'postgres' user for the nbgrader database (the database
+# name will be 'gradebook')
+gradebook_postgres_password: ''
 
 # This is the path to where the docker TLS certificates are stored -- this is
 # necessary for the SwarmSpawner to actually be able to communicate with swarm
